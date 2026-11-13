@@ -19,6 +19,7 @@ struct PtichkiApp: App {
 
 struct RootView: View {
     @EnvironmentObject var store: PetStore
+    @State private var path: [Route] = DebugLaunch.route.map { [$0] } ?? []
 
     var body: some View {
         Group {
@@ -27,11 +28,32 @@ struct RootView: View {
             } else if store.justHatched {
                 HatchView()
             } else {
-                NavigationStack {
+                NavigationStack(path: $path) {
                     PetView()
                 }
             }
         }
         .overlay(alignment: .bottom) { ToastView() }
+    }
+}
+
+/// Параметры запуска для отладки в симуляторе, например:
+/// `-demoPet petya -skipHours 9 -route wash` (только в Debug-сборке).
+enum DebugLaunch {
+    static func value(_ key: String) -> String? {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: key), i + 1 < args.count { return args[i + 1] }
+        #endif
+        return nil
+    }
+    static var route: Route? {
+        switch value("-route") {
+        case "wash": .wash
+        case "games": .games
+        case "catch": .catchGame
+        case "flap": .flap
+        default: nil
+        }
     }
 }

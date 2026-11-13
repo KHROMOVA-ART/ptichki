@@ -5,7 +5,6 @@ enum Route: Hashable { case wash, games, catchGame, flap }
 struct PetView: View {
     @EnvironmentObject var store: PetStore
     @State private var munching = false
-    @State private var hop = false
     @State private var falling: [UUID] = []
     private let clock = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
 
@@ -32,13 +31,20 @@ struct PetView: View {
             }
             .padding(.horizontal, 4)
 
+            GeometryReader { g in
+            let side = min(g.size.width, g.size.height)
             ZStack {
-                ChickView(look: pet.look, mood: munching ? .happy : mood, dirt: pet.dirt)
-                    .scaleEffect(x: mood == .sleep && hop ? 1.04 : 1, y: mood == .sleep && hop ? 0.97 : 1, anchor: .bottom)
-                    .offset(y: mood != .sleep && hop ? -6 : 0)
-                    .rotationEffect(.degrees(munching ? -8 : 0))
-                    .animation(.easeInOut(duration: mood == .sleep ? 1.4 : (mood == .hungry || mood == .tired || mood == .bored ? 1.5 : 0.8)).repeatForever(autoreverses: true), value: hop)
-                    .animation(.easeInOut(duration: 0.15).repeatCount(6, autoreverses: true), value: munching)
+                // покачивание считается от времени, а не неявной анимацией: так размер цыпы не «анимируется» из нуля
+                TimelineView(.animation) { tl in
+                    let t = tl.date.timeIntervalSinceReferenceDate
+                    let speed = mood == .sleep ? 2.2 : (mood == .hungry || mood == .tired || mood == .bored ? 2.6 : 5.5)
+                    let wave = sin(t * speed)
+                    ChickView(look: pet.look, mood: munching ? .happy : mood, dirt: pet.dirt)
+                        .frame(width: side, height: side)
+                        .scaleEffect(x: mood == .sleep ? 1 + 0.02 * wave : 1, y: mood == .sleep ? 1 - 0.02 * wave : 1, anchor: .bottom)
+                        .offset(y: mood == .sleep ? 0 : -3 - 3 * wave)
+                        .rotationEffect(.degrees(munching ? -6 * sin(t * 30) : 0), anchor: .bottom)
+                }
                 if mood == .sleep { ZzzView() }
                 if mood == .bored {
                     Text("…").font(.system(size: 15, weight: .black, design: .rounded))
@@ -51,8 +57,10 @@ struct PetView: View {
                     FallingGrain(delay: Double(i) * 0.15, x: CGFloat(i - 1) * 18)
                 }
             }
-            .frame(maxHeight: .infinity)
-            .onAppear { hop = true }
+            .frame(width: g.size.width, height: g.size.height)
+            }
+            .frame(maxWidth: .infinity)
+            .containerRelativeFrame(.vertical) { h, _ in h * 0.46 }
 
             Text("\(Text(pet.name).bold()) \(mood.text)")
                 .font(.system(size: 13, weight: .medium, design: .rounded))

@@ -182,6 +182,14 @@ final class PetStore: ObservableObject {
     init() {
         load()
         tick()
+        #if DEBUG
+        if let id = DebugLaunch.value("-demoPet") {
+            pet = id == "none" ? nil : Pet(lookID: id)
+        }
+        if let h = DebugLaunch.value("-skipHours"), let hours = Double(h) { skip(hours: hours) }
+        if DebugLaunch.value("-sleep") == "1" { pet?.sleeping = true }
+        if let a = DebugLaunch.value("-hatch"), a == "1" { justHatched = true }
+        #endif
     }
 
     // время идёт: цыпа голодает, пачкается, скучает и устаёт (во сне — медленнее, а энергия растёт)
