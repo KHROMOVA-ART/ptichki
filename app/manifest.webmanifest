@@ -1,0 +1,17 @@
+{
+  "name": "Птички — мерч птицефабрики",
+  "short_name": "Птички",
+  "description": "Свайпайте цыпочек, ловите мэтчи и скидки на мерч птицефабрики.",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1E8BFF",
+  "theme_color": "#1E8BFF",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

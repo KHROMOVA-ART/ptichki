@@ -1,0 +1,1347 @@
+<title>Птички: мерч</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800;900&family=Onest:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: phone on a sky backdrop as the stage, flow rail beside it (stacks under it on narrow screens).
+   Look: sky-blue gradients, clouds, frosted-glass pills, white cut-out circles, chunky lowercase display, stickers. */
+:root {
+  --page: #DCEEFF;
+  --page-2: #F3F9FF;
+  --page-ink: #0E1B33;
+  --page-muted: #56688A;
+  --rail: rgba(255,255,255,.7);
+  --rail-line: rgba(14,27,51,.08);
+
+  --sky-1: #1E8BFF;
+  --sky-2: #5DB6FF;
+  --sky-3: #BFE3FF;
+  --cloud: #FFFFFF;
+  --ink: #0E1B33;
+  --muted: #7E8CA6;
+  --line: rgba(14,27,51,.08);
+  --surface: #FFFFFF;
+  --glass: rgba(255,255,255,.58);
+  --glass-line: rgba(255,255,255,.75);
+  --cobalt: #1F48FF;
+  --hot: #FF4436;
+  --yolk: #FFC93C;
+
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Onest", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0B1426; --page-2: #13213D; --page-ink: #EAF2FF; --page-muted: #94A6C6;
+    --rail: rgba(255,255,255,.06); --rail-line: rgba(255,255,255,.1);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0B1426; --page-2: #13213D; --page-ink: #EAF2FF; --page-muted: #94A6C6;
+  --rail: rgba(255,255,255,.06); --rail-line: rgba(255,255,255,.1);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: radial-gradient(120% 80% at 20% 0%, var(--page-2), var(--page) 60%) fixed, var(--page);
+  color: var(--page-ink); font-family: var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 40px; min-height: 100%;
+}
+
+/* ---------- phone ---------- */
+.phone-fit { flex: none; width: min(390px, 100%); aspect-ratio: 390 / 812; max-width: 100%; position: relative; }
+.phone {
+  width: 390px; height: 812px; position: absolute; top: 0; left: 0; transform-origin: 0 0;
+  border-radius: 58px; background: #11131B; padding: 11px;
+  box-shadow: 0 0 0 2px #2A2F3D inset, 0 40px 80px -30px rgba(20,70,160,.55);
+}
+.screen-area {
+  position: relative; width: 100%; height: 100%; border-radius: 48px; overflow: hidden;
+  background: var(--surface); color: var(--ink); font-family: var(--body);
+  container-type: size;
+}
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 32%; height: 31px; background: #000; border-radius: 20px; z-index: 60; }
+.status { position: absolute; top: 0; left: 0; right: 0; height: 52px; display: flex; justify-content: space-between; align-items: center; padding: 6px 32px 0; font: 700 15px var(--body); z-index: 50; pointer-events: none; color: #fff; }
+.status.dark { color: var(--ink); }
+.status .icons { display: flex; gap: 6px; align-items: center; }
+.status .bat { width: 25px; height: 12px; border: 1.5px solid currentColor; border-radius: 4px; position: relative; opacity: .9; }
+.status .bat::after { content: ""; position: absolute; inset: 1.5px; right: 5px; background: currentColor; border-radius: 1.5px; }
+.homebar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 36%; height: 5px; border-radius: 3px; background: var(--ink); z-index: 60; pointer-events: none; }
+
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; animation: enter .4s ease both; }
+@keyframes enter { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }
+
+/* sky + clouds */
+.sky { background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, var(--sky-3) 100%); overflow: hidden; }
+.sky:not(.screen) { position: relative; }
+.clouds { position: absolute; inset: 0; pointer-events: none; }
+.clouds span { position: absolute; border-radius: 50%; background: var(--cloud); filter: blur(18px); opacity: .55; }
+.clouds span:nth-child(1) { width: 220px; height: 90px; top: 8%; left: -60px; }
+.clouds span:nth-child(2) { width: 180px; height: 70px; top: 26%; right: -50px; opacity: .45; }
+.clouds span:nth-child(3) { width: 260px; height: 110px; top: 58%; left: 30%; opacity: .35; }
+.clouds span:nth-child(4) { width: 160px; height: 60px; top: 80%; left: -40px; opacity: .5; }
+
+.glass {
+  background: var(--glass); border: 1px solid var(--glass-line);
+  backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+
+.pill { border: none; border-radius: 999px; padding: 16px 24px; font: 700 16px var(--body); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+.pill-black { background: var(--ink); color: #fff; }
+.pill-cobalt { background: var(--cobalt); color: #fff; box-shadow: 0 10px 24px -10px var(--cobalt); }
+.pill-white { background: #fff; color: var(--ink); }
+.pill.wide { width: 100%; }
+.pill:active { transform: scale(.98); }
+.pill .arrow { width: 22px; height: 22px; border-radius: 6px; background: rgba(255,255,255,.2); display: grid; place-items: center; }
+.link { background: none; border: none; color: inherit; opacity: .75; font: 600 14px var(--body); cursor: pointer; padding: 10px; }
+:is(.pill, .link, .iconbtn, .round, .chip, .tab, .field input):focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+
+.iconbtn { width: 42px; height: 42px; border-radius: 50%; border: none; display: grid; place-items: center; cursor: pointer; color: var(--ink); position: relative; flex: none; }
+.dot { position: absolute; top: 9px; right: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--hot); border: 2px solid #fff; }
+
+.sticker { position: absolute; z-index: 3; filter: drop-shadow(0 6px 10px rgba(14,27,51,.18)); animation: bob 3.2s ease-in-out infinite; }
+.sticker:nth-of-type(2n) { animation-delay: -1.4s; }
+@keyframes bob { 0%,100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-8px) rotate(var(--r, 0deg)); } }
+
+/* splash */
+.splash { align-items: center; justify-content: center; gap: 4px; color: #fff; }
+.splash .hero { width: 190px; position: relative; z-index: 2; animation: bob 2.4s ease-in-out infinite; }
+.splash .logo { font: 900 52px/1 var(--display); letter-spacing: -.03em; position: relative; z-index: 2; margin-top: 8px; }
+.splash .sub { font: 600 15px var(--body); opacity: .85; position: relative; z-index: 2; }
+.loader { position: absolute; bottom: 64px; left: 50%; transform: translateX(-50%); width: 46%; height: 10px; border-radius: 6px; overflow: hidden; z-index: 2; padding: 2px; }
+.loader i { display: block; height: 100%; width: 0; background: #fff; border-radius: 4px; animation: load 1.9s ease-in-out forwards; }
+@keyframes load { to { width: 100%; } }
+
+/* register */
+.reg .top { height: 46%; display: grid; place-items: center; flex: none; }
+.cutout { width: 170px; height: 170px; border-radius: 50%; background: #fff; display: grid; place-items: end center; position: relative; z-index: 2; margin-top: 40px; }
+.cutout .art { width: 128%; margin-bottom: 4px; }
+.reg .sheet { flex: 1; background: var(--surface); border-radius: 36px 36px 0 0; margin-top: -40px; position: relative; z-index: 3; padding: 26px 22px 36px; display: flex; flex-direction: column; gap: 14px; }
+.big { font: 900 40px/0.95 var(--display); letter-spacing: -.03em; margin: 0; text-transform: lowercase; }
+.reg .big { text-align: center; }
+.reg p.lead { margin: -4px 0 4px; text-align: center; color: var(--muted); font-size: 14px; line-height: 1.45; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font: 600 12px var(--body); color: var(--muted); padding-left: 16px; }
+.field input { border: 1px solid var(--line); background: #F3F7FC; border-radius: 999px; padding: 15px 18px; font: 600 16px var(--body); color: var(--ink); }
+.field input:focus { border-color: var(--sky-1); background: #fff; outline: none; }
+.legal { font-size: 11px; color: var(--muted); text-align: center; }
+
+/* deck */
+.deck { padding: 56px 18px 0; }
+.hello { display: flex; align-items: center; gap: 10px; border-radius: 999px; padding: 6px 6px 6px 6px; position: relative; z-index: 4; }
+.ava { width: 40px; height: 40px; border-radius: 50%; background: var(--yolk); display: grid; place-items: center; overflow: hidden; flex: none; }
+.ava svg { width: 46px; margin-top: 8px; }
+.hello .who { flex: 1; min-width: 0; line-height: 1.15; }
+.hello .who small { display: block; font-size: 12px; color: var(--muted); font-weight: 500; }
+.hello .who b { font-size: 15px; }
+.grains { text-align: center; color: #fff; position: relative; z-index: 2; margin-top: 10px; }
+.grains small { font: 600 13px var(--body); opacity: .9; }
+.grains h2 { font: 900 22px/1.1 var(--display); margin: 2px 0 0; letter-spacing: -.02em; text-transform: lowercase; }
+.deck-wrap { position: relative; flex: 1; margin: 14px 8px 10px; z-index: 2; }
+.card {
+  position: absolute; inset: 0; border-radius: 34px; overflow: hidden; background: var(--surface);
+  box-shadow: 0 24px 40px -22px rgba(14,40,100,.55); touch-action: none; user-select: none; cursor: grab;
+  display: flex; flex-direction: column; will-change: transform; border: 1px solid rgba(255,255,255,.9);
+}
+.card:active { cursor: grabbing; }
+.card .art { flex: 1; display: grid; place-items: center; position: relative; min-height: 0; margin: 8px 8px 0; border-radius: 28px; }
+.card .art > svg { width: 72%; height: auto; max-height: 92%; }
+.card .info { padding: 12px 18px 16px; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.card .name { font: 900 24px/1 var(--display); margin: 0; letter-spacing: -.02em; text-transform: lowercase; }
+.card .what { color: var(--muted); font: 500 13px var(--body); margin-top: 6px; }
+.card .cost { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.card .cost s { display: block; color: var(--muted); font-size: 12px; }
+.card .cost b { font: 800 16px var(--display); }
+.card .tag { position: absolute; top: 12px; left: 12px; border-radius: 999px; padding: 6px 11px; font: 700 12px var(--body); color: var(--ink); }
+.stamp { position: absolute; top: 30px; padding: 8px 16px; border-radius: 999px; font: 900 22px var(--display); opacity: 0; pointer-events: none; color: #fff; text-transform: lowercase; z-index: 2; }
+.stamp.like { right: 20px; background: var(--hot); transform: rotate(10deg); }
+.stamp.nope { left: 20px; background: var(--ink); transform: rotate(-10deg); }
+.card.behind { transform: rotate(4deg) translateY(8px) scale(.96); }
+.card.behind2 { transform: rotate(-5deg) translateY(14px) scale(.92); }
+.empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; color: #fff; font-weight: 600; padding: 20px; }
+.empty b { font: 900 20px var(--display); text-transform: lowercase; }
+.actions { display: flex; justify-content: center; gap: 22px; position: relative; z-index: 3; margin: -40px 0 10px; }
+.deck-wrap { margin-bottom: 0 !important; }
+.card .info { padding-bottom: 40px !important; }
+.hello .who small, .hello .who b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.grains small { white-space: nowrap; }
+.round { width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer; display: grid; place-items: center; }
+.round.no { color: var(--ink); }
+.round.yes { background: var(--hot); color: #fff; box-shadow: 0 12px 24px -10px var(--hot); }
+.round:active { transform: scale(.93); }
+
+.tabbar { position: relative; z-index: 4; margin: 0 6px 26px; border-radius: 999px; padding: 6px; display: flex; justify-content: space-between; background: rgba(255,255,255,.88); box-shadow: 0 10px 30px -14px rgba(14,40,100,.5); }
+.tab { flex: 1; min-width: 0; white-space: nowrap; border: none; background: none; border-radius: 999px; padding: 7px 4px 6px; display: flex; flex-direction: column; align-items: center; gap: 3px; font: 600 11px var(--body); color: var(--ink); cursor: pointer; position: relative; }
+.tab[aria-current="page"] { color: var(--hot); }
+.tab .badge { position: absolute; top: 2px; left: 56%; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--hot); color: #fff; font: 800 10px/17px var(--body); }
+
+/* match */
+.match { align-items: center; justify-content: center; text-align: center; color: #fff; padding: 60px 24px 40px; gap: 10px; }
+.match .cutout { width: 200px; height: 200px; margin-top: 0; animation: pop .6s cubic-bezier(.2,1.6,.4,1) both; }
+.match .cutout .nm { position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 7px 14px; border-radius: 999px; font: 700 13px var(--body); color: var(--ink); }
+.match h2 { font: 900 72px/1 var(--display); margin: 22px 0 0; letter-spacing: -.04em; animation: pop .6s .1s cubic-bezier(.2,1.6,.4,1) both; position: relative; z-index: 2; }
+.match p { margin: 0 0 10px; opacity: .92; font-size: 15px; line-height: 1.45; max-width: 290px; position: relative; z-index: 2; }
+.match .btns { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative; z-index: 2; }
+.confetti { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.confetti i { position: absolute; top: -20px; width: 9px; height: 13px; border-radius: 3px; animation: fall linear forwards; }
+@keyframes fall { to { transform: translateY(900px) rotate(540deg); } }
+@keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* product */
+.product .top { height: 44%; flex: none; display: grid; place-items: center; }
+.product .cutout { width: 190px; height: 190px; margin-top: 70px; }
+.product .bar { position: absolute; top: 54px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+.product .bar .crumb { color: #fff; font: 800 14px var(--display); text-transform: lowercase; }
+.product .sheet { flex: 1; background: var(--surface); margin-top: -10px; position: relative; z-index: 3; padding: 32px 22px 32px; display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; }
+.product .big { font-size: 46px; }
+.meta { display: flex; gap: 18px; color: var(--muted); font-size: 13px; justify-content: center; flex-wrap: wrap; }
+.about { display: inline-flex; gap: 6px; align-items: center; background: #F1F4F9; border-radius: 999px; padding: 6px 12px; font: 600 12px var(--body); color: var(--ink); }
+.price { display: flex; align-items: baseline; gap: 10px; font-variant-numeric: tabular-nums; justify-content: center; margin-top: 4px; }
+.price s { font: 600 17px var(--body); color: var(--muted); text-decoration-color: var(--hot); text-decoration-thickness: 2px; }
+.price b { font: 900 32px var(--display); letter-spacing: -.02em; }
+.price em { font-style: normal; background: var(--hot); color: #fff; padding: 4px 9px; border-radius: 999px; font: 800 12px var(--body); align-self: center; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.chip { min-width: 50px; padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line); background: #F3F7FC; font: 700 14px var(--body); color: var(--ink); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.timer { font-size: 12px; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+.product .spacer { flex: 1; }
+
+/* thanks */
+.thanks { align-items: center; justify-content: center; text-align: center; gap: 14px; padding: 60px 24px 40px; }
+.thanks .big { color: #fff; position: relative; z-index: 2; font-size: 38px; }
+.thanks .heart { width: 230px; height: auto; position: relative; z-index: 2; animation: beat 1.4s ease-in-out infinite; filter: drop-shadow(0 18px 24px rgba(14,40,100,.3)); }
+.thanks .order { position: relative; z-index: 2; border-radius: 24px; padding: 14px 18px; font-size: 14px; color: var(--ink); line-height: 1.5; }
+.thanks .order b { font-variant-numeric: tabular-nums; }
+.thanks .pill { position: relative; z-index: 2; margin-top: 6px; }
+@keyframes beat { 0%,100% { transform: scale(1); } 15% { transform: scale(1.06); } 30% { transform: scale(1); } 45% { transform: scale(1.04); } }
+
+/* liked sheet */
+.sheet-bg { position: absolute; inset: 0; background: rgba(14,27,51,.35); z-index: 30; display: flex; align-items: flex-end; }
+.lsheet { background: #fff; width: 100%; border-radius: 34px 34px 0 0; padding: 12px 20px 36px; max-height: 72%; overflow: auto; animation: up .28s ease both; }
+.lsheet .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 14px; }
+@keyframes up { from { transform: translateY(100%); } to { transform: none; } }
+.lsheet h3 { font: 900 22px var(--display); margin: 0 0 10px; text-transform: lowercase; }
+.row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.row .thumb { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; flex: none; overflow: hidden; }
+.row .thumb svg { width: 50px; height: 50px; }
+.row .t { flex: 1; min-width: 0; font-weight: 700; font-size: 14px; }
+.row .t small { display: block; color: var(--muted); font-weight: 500; }
+.row button { font: 700 12px var(--body); border: none; background: var(--cobalt); color: #fff; border-radius: 999px; padding: 9px 14px; cursor: pointer; }
+
+/* ---------- devices ---------- */
+
+/* ---------- watch ---------- */
+.watch-fit { width: 100%; aspect-ratio: 250 / 330; position: relative; }
+.watch { width: 250px; height: 330px; position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+.strap { position: absolute; left: 44px; width: 146px; height: 60px; background: linear-gradient(90deg, #A9C8F0, #CFE3FB 50%, #A9C8F0); }
+.strap.t { top: 0; border-radius: 18px 18px 0 0; }
+.strap.b { bottom: 0; border-radius: 0 0 18px 18px; }
+.case { position: absolute; left: 6px; top: 35px; width: 222px; height: 260px; border-radius: 62px; background: linear-gradient(145deg, #3A4152, #12151E 60%); padding: 12px; box-shadow: 0 30px 50px -24px rgba(20,70,160,.55), inset 0 0 0 2px #4A5266; }
+.case.buzz { animation: buzz .45s linear 2; }
+@keyframes buzz { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-3px); } 40% { transform: translateX(3px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
+.crown, .sidebtn { position: absolute; border: none; cursor: pointer; padding: 0; }
+.crown { right: -10px; top: 70px; width: 13px; height: 38px; border-radius: 5px; background: repeating-linear-gradient(180deg, #59617A 0 2px, #3A4152 2px 4px); }
+.sidebtn { right: -7px; top: 130px; width: 8px; height: 52px; border-radius: 4px; background: #3A4152; }
+.sidebtn.ready { background: var(--hot); box-shadow: 0 0 0 4px rgba(255,68,54,.25); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 9px rgba(255,68,54,0); } }
+.crown:focus-visible, .sidebtn:focus-visible { outline: 2px solid var(--sky-1); outline-offset: 3px; }
+.wscreen-area { position: relative; width: 198px; height: 236px; border-radius: 48px; overflow: hidden; background: #000; color: #fff; font-family: var(--body); }
+.ws { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 30px 14px 12px; animation: enter .35s ease both; }
+.wtime { position: absolute; top: 12px; right: 22px; font: 700 13px var(--body); color: #fff; z-index: 5; }
+.wtitle { position: absolute; top: 12px; left: 22px; font: 800 13px var(--display); color: var(--sky-2); z-index: 5; text-transform: lowercase; }
+.ws .wbtn { border: none; border-radius: 999px; padding: 9px 10px; font: 700 13px var(--body); cursor: pointer; color: #fff; background: #26324A; width: 100%; }
+.ws .wbtn.sky { background: var(--sky-1); }
+.ws .wbtn.hot { background: var(--hot); }
+.ws .wbtn:focus-visible { outline: 2px solid var(--sky-2); outline-offset: 2px; }
+
+.face { padding: 0; background: radial-gradient(90% 70% at 50% 100%, #12397A, #000 70%); align-items: center; }
+.face .big-t { font: 900 58px/1 var(--display); letter-spacing: -.04em; margin-top: 34px; font-variant-numeric: tabular-nums; }
+.face .date { font: 600 13px var(--body); color: var(--sky-2); margin-top: 4px; }
+.comp { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.08); border: none; color: #fff; border-radius: 999px; padding: 5px 12px 5px 5px; cursor: pointer; font: 700 13px var(--body); white-space: nowrap; }
+.comp .ringsm { width: 44px; height: 44px; position: relative; }
+.comp .ringsm svg { position: absolute; inset: 0; }
+.comp small { display: block; font-weight: 500; color: rgba(255,255,255,.6); font-size: 11px; }
+
+/* tamagotchi */
+.toast { position: absolute; left: 12px; right: 12px; bottom: 54px; background: rgba(38,50,74,.96); border-radius: 16px; padding: 8px 10px; font: 600 11.5px/1.3 var(--body); text-align: center; z-index: 8; animation: enter .3s ease both; }
+.egg-s { align-items: center; justify-content: center; text-align: center; gap: 8px; background: radial-gradient(80% 60% at 50% 45%, #12397A, #000 75%); }
+.egg-s .egg-big { width: 74px; animation: wobble 1.8s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes wobble { 0%,60%,100% { transform: rotate(0); } 70% { transform: rotate(-8deg); } 80% { transform: rotate(7deg); } 90% { transform: rotate(-4deg); } }
+.egg-s p { margin: 0; font: 600 11.5px/1.35 var(--body); color: rgba(255,255,255,.75); }
+.egg-s b { font: 900 16px var(--display); text-transform: lowercase; }
+.hatch .egg-big { animation: crack .9s ease-in both; }
+@keyframes crack { 0% { transform: rotate(0) scale(1); } 30% { transform: rotate(-12deg); } 60% { transform: rotate(12deg); } 100% { transform: scale(1.5); opacity: 0; } }
+.hatch .born { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; animation: pop .6s .8s cubic-bezier(.2,1.6,.4,1) both; }
+.hatch .born .pet { width: 104px; }
+.hatch .born b { font: 900 17px var(--display); text-transform: lowercase; }
+
+.pet-s { padding: 28px 12px 10px; align-items: center; background: radial-gradient(90% 55% at 50% 58%, #10306A, #000 78%); }
+.bars { display: flex; gap: 6px; width: 100%; padding: 0 6px; }
+.bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar svg { display: block; }
+.bar i { display: block; width: 100%; height: 5px; border-radius: 3px; background: rgba(255,255,255,.15); overflow: hidden; }
+.bar i span { display: block; height: 100%; border-radius: 3px; transition: width .4s ease; }
+.bar.low i span { animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: .35; } }
+.stage-w { position: relative; flex: 1; width: 100%; display: grid; place-items: center; min-height: 0; }
+.pet { width: 100px; position: relative; z-index: 2; }
+.pet.idle { animation: hop 1.6s ease-in-out infinite; }
+.pet.slow { animation: hop 3s ease-in-out infinite; }
+.pet.eat { animation: munch .25s ease-in-out 6; }
+@keyframes hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-7px) scaleY(1.03); } 55% { transform: translateY(0) scaleY(.96); } }
+@keyframes munch { 50% { transform: rotate(-8deg) translateY(3px); } }
+.mood { font: 700 11.5px var(--body); color: rgba(255,255,255,.8); text-align: center; min-height: 15px; }
+.mood b { color: #fff; }
+.float { position: absolute; z-index: 3; pointer-events: none; animation: rise 1.4s ease-out forwards; }
+@keyframes rise { from { transform: translateY(0) scale(.6); opacity: 1; } to { transform: translateY(-46px) scale(1.1); opacity: 0; } }
+.fly-dot { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #CFC6B0; z-index: 3; animation: buzzfly 1.4s linear infinite; }
+@keyframes buzzfly { 0% { transform: translate(0,0); } 25% { transform: translate(14px,-8px); } 50% { transform: translate(4px,-16px); } 75% { transform: translate(-10px,-6px); } 100% { transform: translate(0,0); } }
+.dots3 { position: absolute; top: 4px; right: 34px; background: #fff; color: var(--ink); border-radius: 12px; padding: 2px 8px; font: 900 13px/1.2 var(--display); z-index: 3; }
+.grain { position: absolute; width: 8px; height: 11px; border-radius: 50%; background: #FFC93C; z-index: 3; }
+.grain.drop { animation: drop .7s ease-in forwards; }
+@keyframes drop { from { transform: translateY(-60px); opacity: 1; } to { transform: translateY(0); opacity: 0; } }
+.acts { display: flex; gap: 8px; justify-content: center; }
+.act { width: 46px; height: 46px; border-radius: 50%; border: none; display: grid; place-items: center; cursor: pointer; color: #fff; position: relative; }
+.act.feed { background: #E9A400; } .act.wash { background: #1E8BFF; } .act.play { background: #FF4436; }
+.act:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.act:active { transform: scale(.92); }
+.act .need { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 3px solid currentColor; }
+.wallet { position: absolute; top: 12px; left: 22px; font: 800 12px var(--body); color: #FFC93C; z-index: 5; font-variant-numeric: tabular-nums; }
+
+.wash-s { align-items: center; padding: 30px 12px 10px; background: linear-gradient(180deg, #0B3A8C, #1E8BFF); }
+.wash-s .scrub { position: relative; flex: 1; width: 100%; display: grid; place-items: center; touch-action: none; cursor: grab; }
+.bubble { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,.85); background: rgba(255,255,255,.18); pointer-events: none; animation: bub 1.2s ease-out forwards; z-index: 3; }
+@keyframes bub { to { transform: translateY(-30px) scale(1.3); opacity: 0; } }
+.meter { width: 80%; height: 6px; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; margin: 4px 0 6px; }
+.meter span { display: block; height: 100%; background: #fff; transition: width .2s; }
+
+.game-s { padding: 28px 10px 10px; background: radial-gradient(90% 60% at 50% 60%, #3A1A0A, #000 80%); }
+.hud { display: flex; justify-content: space-between; font: 800 12px var(--body); padding: 0 10px; font-variant-numeric: tabular-nums; }
+.arena { position: relative; flex: 1; margin-top: 4px; }
+.target { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: none; background: radial-gradient(circle at 40% 35%, #FFE7A1, #FFC93C 60%, #E9A400); cursor: pointer; animation: pop .25s ease both; padding: 0; }
+.target.worm { background: radial-gradient(circle at 40% 35%, #FFC0CB, #FF7A9A 60%, #E2456A); }
+.target.got { animation: gotit .25s ease forwards; }
+@keyframes gotit { to { transform: scale(1.6); opacity: 0; } }
+.game-end { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; padding: 0 16px; z-index: 6; }
+.game-end b { font: 900 30px var(--display); }
+.game-end small { color: rgba(255,255,255,.75); font-size: 11.5px; }
+.ws .wbtn.yolk { background: #FFC93C; color: var(--ink); }
+.acts { gap: 6px; }
+.act { width: 38px; height: 38px; }
+.act svg { width: 19px; height: 19px; }
+.act.sleep { background: #7A5CFF; }
+.bars { gap: 5px; padding: 0 4px; }
+.pet-s { transition: background .6s; }
+.pet-s.asleep { background: radial-gradient(90% 55% at 50% 58%, #1E1550, #000 78%); }
+.pet-s.asleep .act:not(.sleep) { opacity: .4; }
+.pet.breathe { animation: breathe 2.8s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes breathe { 50% { transform: scale(1.04, .97); } }
+.zzz { position: absolute; left: 62%; top: 30%; font: 900 14px var(--display); color: #C9B8FF; z-index: 3; animation: zz 2.4s ease-out infinite; pointer-events: none; }
+@keyframes zz { from { transform: translate(0,0) scale(.6); opacity: 0; } 20% { opacity: 1; } to { transform: translate(22px,-42px) scale(1.2); opacity: 0; } }
+.games-s { gap: 8px; padding: 32px 12px 12px; }
+.gtile { flex: 1; border: none; border-radius: 22px; color: #fff; text-align: left; padding: 10px 14px; cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; }
+.gtile b { font: 900 15px var(--display); }
+.gtile small { font: 600 11px var(--body); opacity: .85; }
+.gtile.g1 { background: linear-gradient(135deg, #E9A400, #FF7A1A); }
+.gtile.g2 { background: linear-gradient(135deg, #1E8BFF, #3FB56A); }
+.gtile:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.flap-s { padding: 30px 12px 10px; }
+.flapbox { position: relative; flex: 1; border-radius: 22px; overflow: hidden; }
+.flapbox canvas { width: 174px; height: 196px; display: block; touch-action: none; cursor: pointer; }
+.flap-hud { position: absolute; top: 6px; left: 0; right: 0; text-align: center; font: 900 22px var(--display); color: #fff; text-shadow: 0 2px 0 rgba(14,27,51,.35); pointer-events: none; }
+.flap-tip { position: absolute; left: 10px; right: 10px; bottom: 26px; text-align: center; font: 700 11.5px var(--body); background: rgba(14,27,51,.55); border-radius: 12px; padding: 6px; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+}
+/* phone tab screens */
+.tabscreen .tabbar { position: absolute; left: 12px; right: 12px; bottom: 0; margin: 0 0 26px; }
+.tabscreen .top { height: 40%; flex: none; display: grid; place-items: center; }
+.tabscreen .top .cutout { margin-top: 56px; }
+.tabscreen .sheet { flex: 1; background: var(--surface); margin-top: -12px; position: relative; z-index: 3; padding: 26px 22px 120px; display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; overflow: auto; border-radius: 30px 30px 0 0; }
+.tabscreen .big { font-size: 42px; }
+.tabhead { padding: 64px 22px 0; position: relative; z-index: 2; }
+.nopet { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; color: #fff; padding: 0 32px 120px; }
+.nopet .sticker { animation: wobble 1.8s ease-in-out infinite; transform-origin: 50% 90%; }
+.nopet b { font: 900 22px var(--display); }
+.nopet p { margin: 0; opacity: .9; line-height: 1.45; font-size: 15px; }
+.pstats { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.prow { display: grid; grid-template-columns: 22px 78px 1fr 30px; align-items: center; gap: 8px; text-align: left; font: 600 14px var(--body); }
+.prow .pic svg { width: 18px; height: 18px; display: block; }
+.prow i { height: 10px; border-radius: 5px; background: #EEF2F8; overflow: hidden; }
+.prow i span { display: block; height: 100%; border-radius: 5px; transition: width .4s ease; }
+.prow b { text-align: right; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--muted); }
+.watchnote { display: flex; align-items: center; gap: 12px; text-align: left; background: #F1F6FD; border-radius: 20px; padding: 12px 14px; font: 600 13px/1.35 var(--body); width: 100%; margin-top: 4px; }
+.watchnote svg { flex: none; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+.tiles div { background: #F1F6FD; border-radius: 18px; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; }
+.tiles b { font: 900 18px var(--display); font-variant-numeric: tabular-nums; }
+.tiles small { color: var(--muted); font-size: 11.5px; }
+.sec { font: 900 20px var(--display); margin: 8px 0 0; align-self: flex-start; }
+.orders { width: 100%; text-align: left; }
+.orders .osum { font: 800 14px var(--display); white-space: nowrap; }
+.orders .none { color: var(--muted); margin: 0; font-size: 14px; }
+
+/* page: the two devices, nothing else */
+html, body { height: 100%; }
+body { padding-block: 0; }
+.stagepage { min-height: 100%; display: flex; align-items: center; justify-content: center; gap: clamp(24px, 5vw, 72px); flex-wrap: wrap; padding-block: 32px; }
+.phone-fit, .watch-fit { flex: none; position: relative; aspect-ratio: auto; max-width: none; }
+</style>
+
+<main class="stagepage">
+  <div class="phone-fit" id="fit">
+    <div class="phone" id="phone" aria-label="iPhone">
+      <div class="screen-area" id="app">
+        <div class="island"></div>
+        <div class="status" id="status"><span>9:41</span><span class="icons"><svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><span class="bat" aria-hidden="true"></span></span></div>
+        <div id="stage"></div>
+        <div class="homebar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="watch-fit" id="wfit">
+    <div class="watch" id="watch" aria-label="Apple Watch">
+      <div class="strap t"></div><div class="strap b"></div>
+      <div class="case" id="wcase">
+        <button class="crown" type="button" id="crownBtn" aria-label="Колёсико Digital Crown"></button>
+        <button class="sidebtn" type="button" id="sideBtn" aria-label="Боковая кнопка"></button>
+        <div class="wscreen-area" id="wstage"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var uid = 0;
+  // ---------- illustrations (soft "3D" shading via gradients) ----------
+  function bird(o) {
+    o = Object.assign({ body: "#FFD24A", shade: "#F2A400", belly: "#FFF0B3", comb: "#FF4436", beak: "#FF8A1F", wing: "#F7B21C", tail: null, item: null }, o);
+    var g = "b" + (++uid);
+    var tail = o.tail ? '<path d="M40 112 L14 82 L24 116 L8 106 L32 138 Z" fill="' + o.tail + '"/>' : "";
+    var items = {
+      tee: '<path d="M70 130 L84 120 L116 120 L130 130 L124 144 L116 140 L116 170 L84 170 L84 140 L76 144 Z" fill="#0E1B33"/><text x="100" y="155" text-anchor="middle" font-family="Unbounded,sans-serif" font-size="9" font-weight="900" fill="#FFD24A">птиц</text>',
+      mug: '<rect x="128" y="122" width="34" height="40" rx="8" fill="#fff" stroke="#0E1B33" stroke-width="4"/><path d="M162 130 q14 0 14 12 q0 12 -14 12" fill="none" stroke="#0E1B33" stroke-width="4"/><path d="M138 114 q4 -8 0 -14 M150 114 q4 -8 0 -14" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>',
+      bag: '<path d="M126 130 h40 l-4 46 h-32 z" fill="#E6F4FF" stroke="#0E1B33" stroke-width="4" stroke-linejoin="round"/><path d="M136 130 q0 -16 10 -16 q10 0 10 16" fill="none" stroke="#0E1B33" stroke-width="4"/>',
+      socks: '<path d="M130 122 h16 v32 q0 8 8 8 h12 v14 h-24 q-12 0 -12 -12 z" fill="#FF4436"/><path d="M130 130 h16" stroke="#fff" stroke-width="4"/>',
+      key: '<circle cx="150" cy="128" r="9" fill="none" stroke="#0E1B33" stroke-width="4"/><ellipse cx="150" cy="158" rx="13" ry="17" fill="#FFF6DD" stroke="#0E1B33" stroke-width="4"/>',
+      bow: '<path d="M92 94 l-13 -9 v18 z M108 94 l13 -9 v18 z" fill="#FF4436"/><circle cx="100" cy="94" r="5" fill="#FF4436"/>'
+    };
+    return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<defs><radialGradient id="' + g + '" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".35" stop-color="' + o.body + '"/><stop offset="1" stop-color="' + o.shade + '"/></radialGradient></defs>' +
+      '<ellipse cx="100" cy="188" rx="50" ry="7" fill="#0E1B33" opacity=".12"/>' +
+      '<path d="M86 168 v16 M80 184 h12 M114 168 v16 M108 184 h12" stroke="' + o.beak + '" stroke-width="5" stroke-linecap="round"/>' +
+      tail +
+      '<ellipse cx="100" cy="128" rx="58" ry="48" fill="url(#' + g + ')"/>' +
+      '<ellipse cx="106" cy="142" rx="32" ry="26" fill="' + o.belly + '" opacity=".9"/>' +
+      '<circle cx="118" cy="72" r="35" fill="url(#' + g + ')"/>' +
+      (o.comb ? '<circle cx="106" cy="40" r="9" fill="' + o.comb + '"/><circle cx="118" cy="34" r="10" fill="' + o.comb + '"/><circle cx="130" cy="40" r="9" fill="' + o.comb + '"/>' : '') +
+      '<path d="M149 68 Q174 76 149 88 Z" fill="' + o.beak + '"/>' +
+      (o.comb ? '<path d="M146 90 q4 12 -4 14 q-6 -6 0 -14" fill="' + o.comb + '"/>' : '') +
+      ({
+        happy: '<path d="M124 68 q7 -10 14 0" fill="none" stroke="#0E1B33" stroke-width="4" stroke-linecap="round"/>',
+        sleep: '<path d="M124 66 q7 6 14 0" fill="none" stroke="#0E1B33" stroke-width="4" stroke-linecap="round"/>',
+        sad: '<ellipse cx="131" cy="68" rx="5.5" ry="6.5" fill="#0E1B33"/><circle cx="133" cy="65.5" r="2" fill="#fff"/><path d="M122 54 l16 6" stroke="#0E1B33" stroke-width="3.5" stroke-linecap="round"/><path d="M128 78 q-3 6 0 9 q3 -3 0 -9" fill="#6EC3FF"/>',
+        bored: '<path d="M124 66 h14" stroke="#0E1B33" stroke-width="4" stroke-linecap="round"/><ellipse cx="131" cy="69" rx="5" ry="3" fill="#0E1B33"/>'
+      }[o.mood] || '<ellipse cx="131" cy="66" rx="6" ry="7" fill="#0E1B33"/><circle cx="133" cy="63" r="2.2" fill="#fff"/>') +
+      (o.dirt ? '<g fill="#8A6A45" opacity="' + o.dirt + '"><ellipse cx="78" cy="150" rx="9" ry="6"/><ellipse cx="128" cy="160" rx="7" ry="5"/><circle cx="104" cy="98" r="5"/><ellipse cx="140" cy="122" rx="6" ry="4"/><circle cx="66" cy="128" r="4"/></g>' : '') +
+      '<ellipse cx="128" cy="85" rx="7" ry="4" fill="#FF7A8A" opacity=".45"/>' +
+      '<path d="M58 118 q22 -16 46 4 q-10 26 -38 20 q-10 -6 -8 -24 z" fill="' + o.wing + '"/>' +
+      (o.item ? items[o.item] : '') +
+      '</svg>';
+  }
+  function flamingo() {
+    var g = "f" + (++uid);
+    return '<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<defs><radialGradient id="' + g + '" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FFD3E2"/><stop offset=".5" stop-color="#FF8FB4"/><stop offset="1" stop-color="#F25C8E"/></radialGradient></defs>' +
+      '<ellipse cx="96" cy="210" rx="40" ry="6" fill="#0E1B33" opacity=".12"/>' +
+      '<path d="M96 160 v48 M96 186 l14 -10 v-8" stroke="#FF4436" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<ellipse cx="88" cy="140" rx="50" ry="30" fill="url(#' + g + ')"/>' +
+      '<path d="M56 136 q24 -16 54 -2 q-14 22 -44 16 z" fill="#F25C8E"/>' +
+      '<path d="M128 132 C 152 116 150 90 128 78 C 104 64 104 34 130 28" stroke="#FF8FB4" stroke-width="15" fill="none" stroke-linecap="round"/>' +
+      '<circle cx="134" cy="28" r="17" fill="url(#' + g + ')"/>' +
+      '<path d="M146 24 q22 4 18 26 q-6 -4 -10 -6 q-2 -10 -10 -12 z" fill="#0E1B33"/>' +
+      '<path d="M146 24 q14 2 14 14 l-8 -2 q-2 -8 -6 -8 z" fill="#fff"/>' +
+      '<ellipse cx="136" cy="24" rx="4" ry="4.5" fill="#0E1B33"/><circle cx="137.5" cy="22.5" r="1.5" fill="#fff"/>' +
+      '</svg>';
+  }
+  function fire(size, r) {
+    return '<svg class="sticker" style="--r:' + (r || 0) + 'deg;width:' + size + 'px" viewBox="0 0 60 76" aria-hidden="true"><path d="M30 3 C 36 18 52 26 52 46 C 52 62 42 73 30 73 C 18 73 8 62 8 47 C 8 35 15 28 19 22 C 21 32 25 35 28 36 C 26 24 26 13 30 3 Z" fill="#FF7A1A" stroke="#fff" stroke-width="5" stroke-linejoin="round"/><path d="M30 38 C 34 46 41 49 41 57 C 41 64 36 68 30 68 C 24 68 19 64 19 57 C 19 51 24 48 26 44 C 27 49 29 50 30 50 C 29 46 29 42 30 38 Z" fill="#FFD24A"/></svg>';
+  }
+  function heartSt(size, r) {
+    return '<svg class="sticker" style="--r:' + (r || 0) + 'deg;width:' + size + 'px" viewBox="0 0 60 52" aria-hidden="true"><path d="M30 48 C 12 36 3 27 4 16 C 5 7 16 1 25 7 L30 11 L35 7 C 44 1 55 7 56 16 C 57 27 48 36 30 48 Z" fill="#FF4436" stroke="#fff" stroke-width="5" stroke-linejoin="round"/></svg>';
+  }
+  function egg(size, r) {
+    return '<svg class="sticker" style="--r:' + (r || 0) + 'deg;width:' + size + 'px" viewBox="0 0 50 62" aria-hidden="true"><ellipse cx="25" cy="34" rx="20" ry="25" fill="#FFF6E0" stroke="#fff" stroke-width="5"/><ellipse cx="18" cy="26" rx="5" ry="8" fill="#fff"/></svg>';
+  }
+  function heartBird() {
+    return '<svg class="heart" viewBox="0 0 240 210" aria-hidden="true">' +
+      '<path d="M120 196 C 40 140 6 104 14 62 C 22 22 72 8 104 38 L120 54 L136 38 C 168 8 218 22 226 62 C 234 104 200 140 120 196 Z" fill="#fff"/>' +
+      '<g transform="translate(62 46) scale(.58)">' + bird({ item: "bow" }).replace(/<svg[^>]*>|<\/svg>/g, "") + '</g></svg>';
+  }
+  var clouds = '<div class="clouds" aria-hidden="true"><span></span><span></span><span></span><span></span></div>';
+
+  // ---------- data (примерные товары) ----------
+  // как выглядит цыпа-питомец после покупки товара
+  var LOOKS = {
+    flamingo: { body: "#FFA3C4", shade: "#F25C8E", belly: "#FFE3EE", wing: "#F25C8E", comb: null, beak: "#0E1B33" },
+    pushok: { comb: null },
+    petya: { body: "#E2563B", shade: "#A8301E", belly: "#F7A877", wing: "#8E2E1F", tail: "#2E8B63" },
+    ryaba: { body: "#F1ECE2", shade: "#C9BDA6", belly: "#FFFFFF", wing: "#B4A68E" },
+    gosha: { body: "#8A6650", shade: "#4F3729", belly: "#C29F80", wing: "#4A3328", tail: "#D6993F" },
+    nesushka: { body: "#FFFFFF", shade: "#D9DDE6", belly: "#FFF3D6", wing: "#E3DCCB" },
+    bro: {}
+  };
+  var PRODUCTS = [
+    { id: "flamingo", name: "Фламинго", what: "Футболка oversize", meta: ["футболка", "oversize", "хлопок"], old: 1000, price: 99, bg: "#FFE4EE", art: flamingo, sizes: ["S", "M", "L", "XL"] },
+    { id: "pushok", name: "Пушок", what: "Плюшевая цыпа, 25 см", meta: ["игрушка", "25 см", "плюш"], old: 1200, price: 590, bg: "#FFF3C9", art: function () { return bird({ comb: null, item: "bow" }); } },
+    { id: "petya", name: "Петя", what: "Кружка «Петух», 350 мл", meta: ["кружка", "350 мл", "керамика"], old: 700, price: 349, bg: "#FFE5DA", art: function () { return bird({ body: "#E2563B", shade: "#A8301E", belly: "#F7A877", wing: "#8E2E1F", tail: "#2E8B63", item: "mug" }); } },
+    { id: "ryaba", name: "Ряба", what: "Шоппер из хлопка", meta: ["шоппер", "38×42", "хлопок"], old: 900, price: 449, bg: "#E5F4EC", art: function () { return bird({ body: "#F1ECE2", shade: "#C9BDA6", belly: "#FFFFFF", wing: "#B4A68E", item: "bag" }); } },
+    { id: "gosha", name: "Гоша", what: "Носки «Лапки», 2 пары", meta: ["носки", "2 пары", "36–44"], old: 500, price: 249, bg: "#E7E8FA", art: function () { return bird({ body: "#8A6650", shade: "#4F3729", belly: "#C29F80", wing: "#4A3328", tail: "#D6993F", item: "socks" }); } },
+    { id: "nesushka", name: "Несушка", what: "Брелок «Яичко»", meta: ["брелок", "6 см", "эмаль"], old: 400, price: 199, bg: "#E3F1FF", art: function () { return bird({ body: "#FFFFFF", shade: "#D9DDE6", belly: "#FFF3D6", wing: "#E3DCCB", item: "key" }); } },
+    { id: "bro", name: "Бройлер Бро", what: "Футболка «птиц»", meta: ["футболка", "regular", "хлопок"], old: 1500, price: 790, bg: "#FFF3C9", art: function () { return bird({ item: "tee" }); }, sizes: ["S", "M", "L", "XL"] }
+  ];
+
+  var FLOW = [
+    { id: "splash", t: "Загрузка", s: "Птичка покачивается, пока грузится каталог" },
+    { id: "register", t: "Регистрация", s: "Имя и телефон" },
+    { id: "deck", t: "Выбери цыпочку", s: "Свайп-карточки: мимо / хочу" },
+    { id: "match", t: "Мэтч", s: "Лайк открывает скидку" },
+    { id: "product", t: "Товар", s: "Цена до и после мэтча, размер" },
+    { id: "thanks", t: "Спасибо за покупку", s: "Заказ оформлен, назад к свайпам" }
+  ];
+
+  var WFLOW = [
+    { id: "face", t: "Циферблат", s: "Компликация: цыпа и её настроение" },
+    { id: "egg", t: "Яйцо", s: "Пока ничего не куплено на iPhone" },
+    { id: "hatch", t: "Вылупление", s: "После покупки цыпа появляется на часах" },
+    { id: "pet", t: "Тамагочи", s: "Сытость, чистота, радость, настроение" },
+    { id: "feed", t: "Покормить", s: "10 зёрен за порцию, зёрна дают шаги" },
+    { id: "wash", t: "Помыть", s: "Трите цыпу пальцем, летят пузыри" },
+    { id: "sleep", t: "Сон", s: "Уложить спать: энергия растёт, всё замедляется" },
+    { id: "games", t: "Поиграть", s: "Выбор из двух мини-игр" },
+    { id: "play", t: "Лови зёрна", s: "Тапайте зёрна и червяков, 10 секунд" },
+    { id: "flap", t: "Над забором", s: "Тап — взмах, пролетайте между досками" }
+  ];
+  var state = { screen: "splash", wscreen: "face", user: "Катя", deck: PRODUCTS.slice(), liked: [], current: PRODUCTS[0], size: "M", orders: 0, orderList: [], steps: 6400, grains: 40, pet: null, alerts: {} };
+  function phoneGrainsLine() { return state.pet ? state.grains + " зёрен для цыпы · " + state.pet.name + " " + moodOf(state.pet).text : state.steps.toLocaleString("ru-RU") + " шагов · " + state.grains + " зёрен"; }
+  var stage = document.getElementById("stage");
+  var statusEl = document.getElementById("status");
+  var splashTimer = null;
+
+  function rub(n) { return n.toLocaleString("ru-RU") + " ₽"; }
+  function pct(p) { return Math.round((1 - p.price / p.old) * 100); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function h(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstElementChild; }
+  var ICON = {
+    x: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    heart: '<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.4 3.2 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.8 0 5.9 3.9 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg>',
+    back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>',
+    bell: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a6 6 0 0 0-6 6v4l-2 3v1h16v-1l-2-3V8a6 6 0 0 0-6-6zm0 20a3 3 0 0 0 3-3H9a3 3 0 0 0 3 3z"/></svg>',
+    go: '<span class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>',
+    info: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="#7E8CA6"/><path d="M11 10h2v7h-2zM11 6.5h2v2h-2z" fill="#fff"/></svg>',
+    home: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+    cards: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="3" width="13" height="17" rx="3" transform="rotate(8 12 12)"/><rect x="4" y="4" width="13" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/></svg>',
+    likes: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.4 3.2 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.8 0 5.9 3.9 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg>',
+    user: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.5"/><path d="M3.5 21c.8-4.4 4.2-7 8.5-7s7.7 2.6 8.5 7z"/></svg>'
+  };
+
+  function renderRail() {}
+
+  // ---------- router ----------
+  function go(id) {
+    clearTimeout(splashTimer);
+    state.screen = id;
+    statusEl.classList.toggle("dark", false);
+    stage.innerHTML = "";
+    stage.appendChild(SCREENS[id]());
+    renderRail();
+  }
+
+  var SCREENS = {
+    splash: function () {
+      var el = h('<section class="screen sky splash">' + clouds +
+        egg(38, -14).replace('class="sticker"', 'class="sticker" style="top:22%;left:16%;--r:-14deg;width:38px"') +
+        heartSt(44, 12).replace('class="sticker"', 'class="sticker" style="top:26%;right:14%;--r:12deg;width:44px"') +
+        '<div class="hero">' + bird({ comb: null }) + '</div><div class="logo">птички</div><div class="sub">мерч птицефабрики</div>' +
+        '<div class="loader glass"><i></i></div></section>');
+      splashTimer = setTimeout(function () { go("register"); }, 2100);
+      el.addEventListener("click", function () { go("register"); });
+      return el;
+    },
+
+    register: function () {
+      var el = h(
+        '<section class="screen reg">' +
+          '<div class="top sky">' + clouds +
+            fire(46, -10).replace('class="sticker"', 'class="sticker" style="top:30%;left:12%;--r:-10deg;width:46px"') +
+            heartSt(40, 14).replace('class="sticker"', 'class="sticker" style="top:44%;right:12%;--r:14deg;width:40px"') +
+            '<div class="cutout"><div class="art">' + bird({ comb: null }) + '</div></div>' +
+          '</div>' +
+          '<div class="sheet">' +
+            '<h2 class="big">привет!</h2>' +
+            '<p class="lead">Найдём вам цыпочку по вкусу.<br>Скидки открываются после мэтча.</p>' +
+            '<form id="regForm" style="display:flex;flex-direction:column;gap:12px">' +
+              '<div class="field"><label for="regName">Как вас зовут</label><input id="regName" autocomplete="off" value="' + esc(state.user) + '" required></div>' +
+              '<div class="field"><label for="regPhone">Телефон</label><input id="regPhone" inputmode="tel" autocomplete="off" value="+7 900 000-00-00"></div>' +
+              '<button class="pill pill-black wide" type="submit" style="margin-top:6px">Начать свайпать</button>' +
+            '</form>' +
+            '<div class="legal">Нажимая кнопку, вы соглашаетесь с условиями магазина</div>' +
+          '</div>' +
+        '</section>');
+      el.querySelector("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        state.user = el.querySelector("#regName").value.trim() || "Гость";
+        go("deck");
+      });
+      return el;
+    },
+
+    deck: function () {
+      var el = h(
+        '<section class="screen sky deck">' + clouds +
+          '<div class="hello glass"><div class="ava">' + bird({ comb: null }) + '</div><div class="who"><small>Доброе утро</small><b>' + esc(state.user) + '</b></div>' +
+            '<button class="iconbtn" type="button" aria-label="Уведомления" style="background:#fff">' + ICON.bell + '<span class="dot"></span></button></div>' +
+          '<div class="grains"><small>' + esc(phoneGrainsLine()) + '</small><h2>выбери цыпочку</h2></div>' +
+          '<div class="deck-wrap" id="deck"></div>' +
+          '<div class="actions">' +
+            '<button class="round no glass" type="button" id="noBtn" aria-label="Мимо">' + ICON.x + '</button>' +
+            '<button class="round yes" type="button" id="yesBtn" aria-label="Хочу">' + ICON.heart + '</button>' +
+          '</div>' +
+          tabbar("deck") +
+        '</section>');
+      var deckEl = el.querySelector("#deck");
+      drawDeck(deckEl);
+      el.querySelector("#noBtn").addEventListener("click", function () { flick(deckEl, -1); });
+      el.querySelector("#yesBtn").addEventListener("click", function () { flick(deckEl, 1); });
+      bindTabs(el);
+      return el;
+    },
+
+    mypet: function () {
+      var pet = state.pet;
+      if (!pet) {
+        var e0 = h('<section class="screen sky tabscreen">' + clouds +
+          '<div class="tabhead"><h2 class="big" style="color:#fff">моя цыпа</h2></div>' +
+          '<div class="nopet">' + egg(90, -6).replace('class="sticker"', 'class="sticker" style="position:relative;width:90px"') +
+          '<b>цыпа ещё в яйце</b><p>Купите любой мерч, и из него вылупится цыпа. Ухаживать за ней можно на Apple Watch.</p>' +
+          '<button class="pill pill-white" type="button" id="toDeck">К свайпам</button></div>' +
+          tabbar("mypet") + '</section>');
+        e0.querySelector("#toDeck").addEventListener("click", function () { go("deck"); });
+        bindTabs(e0);
+        return e0;
+      }
+      var el = h('<section class="screen tabscreen petphone">' +
+        '<div class="top sky">' + clouds +
+          fire(40, -10).replace('class="sticker"', 'class="sticker" style="top:40%;left:12%;--r:-10deg;width:40px"') +
+          heartSt(36, 14).replace('class="sticker"', 'class="sticker" style="top:46%;right:12%;--r:14deg;width:36px"') +
+          '<div class="cutout"><div class="art" id="ppArt"></div></div>' +
+        '</div>' +
+        '<div class="sheet">' +
+          '<h2 class="big">' + esc(pet.name) + '</h2>' +
+          '<div class="meta" id="ppMeta"></div>' +
+          '<div class="pstats" id="ppStats"></div>' +
+          '<div class="watchnote"><svg width="26" height="30" viewBox="0 0 26 30" aria-hidden="true"><rect x="5" y="0" width="16" height="5" rx="2" fill="#BFD6F2"/><rect x="5" y="25" width="16" height="5" rx="2" fill="#BFD6F2"/><rect x="1" y="4" width="24" height="22" rx="7" fill="#0E1B33"/><circle cx="13" cy="15" r="5" fill="#FFC93C"/></svg><span>Кормить, мыть, играть и укладывать спать — на Apple Watch</span></div>' +
+        '</div>' +
+        tabbar("mypet") + '</section>');
+      bindTabs(el);
+      setTimeout(refreshPhone, 0);
+      return el;
+    },
+
+    profile: function () {
+      var el = h('<section class="screen tabscreen profile">' +
+        '<div class="top sky" style="height:34%">' + clouds +
+          '<div class="cutout" style="width:120px;height:120px;margin-top:50px;background:var(--yolk)"><div class="art" style="width:120%">' + bird({ comb: null }) + '</div></div>' +
+        '</div>' +
+        '<div class="sheet">' +
+          '<h2 class="big" style="font-size:36px">' + esc(state.user.toLowerCase()) + '</h2>' +
+          '<div class="meta"><span>+7 900 000-00-00</span></div>' +
+          '<div class="tiles" id="pfTiles"></div>' +
+          '<h3 class="sec">заказы</h3>' +
+          '<div class="orders" id="pfOrders"></div>' +
+        '</div>' +
+        tabbar("profile") + '</section>');
+      bindTabs(el);
+      setTimeout(refreshPhone, 0);
+      return el;
+    },
+
+    match: function () {
+      var p = state.current;
+      var el = h(
+        '<section class="screen sky match">' + clouds +
+          '<div class="confetti" id="conf"></div>' +
+          fire(52, -12).replace('class="sticker"', 'class="sticker" style="top:14%;left:12%;--r:-12deg;width:52px"') +
+          heartSt(46, 14).replace('class="sticker"', 'class="sticker" style="top:18%;right:12%;--r:14deg;width:46px"') +
+          '<div class="cutout"><div class="art" style="width:100%">' + p.art() + '</div><span class="nm glass" style="background:#fff">' + esc(p.name) + '</span></div>' +
+          '<h2>мэтч!</h2>' +
+          '<p>' + esc(state.user) + ', вы понравились друг другу. ' + esc(p.what) + ' теперь за <b>' + rub(p.price) + '</b> вместо ' + rub(p.old) + '.</p>' +
+          '<div class="btns"><button class="pill pill-cobalt wide" type="button" id="buyBtn">Купить за ' + rub(p.price) + ICON.go + '</button>' +
+          '<button class="link" type="button" id="moreBtn">Продолжить свайпать</button></div>' +
+        '</section>');
+      var conf = el.querySelector("#conf");
+      var colors = ["#FFD24A", "#FF4436", "#FF8FB4", "#FFFFFF", "#1F48FF"];
+      for (var i = 0; i < 40; i++) {
+        var c = document.createElement("i");
+        c.style.left = Math.random() * 100 + "%";
+        c.style.background = colors[i % colors.length];
+        c.style.animationDuration = (1.6 + Math.random() * 1.6) + "s";
+        c.style.animationDelay = (Math.random() * .6) + "s";
+        conf.appendChild(c);
+      }
+      el.querySelector("#buyBtn").addEventListener("click", function () { go("product"); });
+      el.querySelector("#moreBtn").addEventListener("click", function () { go("deck"); });
+      return el;
+    },
+
+    product: function () {
+      var p = state.current;
+      var el = h(
+        '<section class="screen product">' +
+          '<div class="bar"><button class="iconbtn glass" type="button" id="backBtn" aria-label="Назад">' + ICON.back + '</button><span class="crumb">товар</span><button class="iconbtn glass" type="button" aria-label="В мэтчах">' + ICON.likes.replace('fill="currentColor"', 'fill="#FF4436"') + '</button></div>' +
+          '<div class="top sky">' + clouds +
+            fire(46, -10).replace('class="sticker"', 'class="sticker" style="top:36%;left:10%;--r:-10deg;width:46px"') +
+            heartSt(38, 16).replace('class="sticker"', 'class="sticker" style="top:42%;right:12%;--r:16deg;width:38px"') +
+            '<div class="cutout"><div class="art" style="width:118%">' + p.art() + '</div></div>' +
+          '</div>' +
+          '<div class="sheet">' +
+            '<h2 class="big">' + esc(p.name) + '</h2>' +
+            '<div class="meta">' + p.meta.map(function (m) { return '<span>' + esc(m) + '</span>'; }).join("") + '</div>' +
+            '<span class="about">' + ICON.info + 'о товаре</span>' +
+            '<div class="price"><s>' + rub(p.old) + '</s><b>' + rub(p.price) + '</b><em>−' + pct(p) + '%</em></div>' +
+            (p.sizes ? '<div class="chips" role="group" aria-label="Размер">' + p.sizes.map(function (s) { return '<button type="button" class="chip" aria-pressed="' + (s === state.size) + '">' + s + '</button>'; }).join("") + '</div>' : '') +
+            '<div class="timer" id="timer">Цена после мэтча держится 15:00</div>' +
+            '<div class="spacer"></div>' +
+            '<button class="pill pill-cobalt wide" type="button" id="payBtn">Купить за ' + rub(p.price) + ICON.go + '</button>' +
+          '</div>' +
+        '</section>');
+      var chips = el.querySelector(".chips");
+      if (chips) chips.addEventListener("click", function (e) {
+        var b = e.target.closest(".chip"); if (!b) return;
+        state.size = b.textContent;
+        chips.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c === b); });
+      });
+      var left = 15 * 60, t = el.querySelector("#timer");
+      var iv = setInterval(function () {
+        if (!document.body.contains(t)) { clearInterval(iv); return; }
+        left = Math.max(0, left - 1);
+        t.textContent = "Цена после мэтча держится " + String(Math.floor(left / 60)).padStart(2, "0") + ":" + String(left % 60).padStart(2, "0");
+      }, 1000);
+      el.querySelector("#backBtn").addEventListener("click", function () { go("deck"); });
+      el.querySelector("#payBtn").addEventListener("click", function (e) {
+        var b = e.currentTarget; b.disabled = true; b.textContent = "Оплачиваем…";
+        setTimeout(function () {
+          state.orders++;
+          state.orderList.push({ p: p, size: p.sizes ? state.size : null, num: "ПТ-" + (24800 + state.orders) });
+          adopt(p);
+          go("thanks");
+          setTimeout(function () { buzz(); wgo("hatch"); }, 700);
+        }, 900);
+      });
+      return el;
+    },
+
+    thanks: function () {
+      var p = state.current;
+      var el = h(
+        '<section class="screen sky thanks">' + clouds +
+          egg(34, -12).replace('class="sticker"', 'class="sticker" style="top:18%;left:14%;--r:-12deg;width:34px"') +
+          fire(40, 10).replace('class="sticker"', 'class="sticker" style="top:58%;right:10%;--r:10deg;width:40px"') +
+          '<h2 class="big">спасибо<br>за покупку</h2>' +
+          heartBird() +
+          '<div class="order glass">Заказ <b>ПТ-' + (24800 + state.orders) + '</b> · ' + esc(p.name) + (p.sizes ? ', ' + esc(state.size) : '') + '<br>Оплачено <b>' + rub(p.price) + '</b>, экономия <b>' + rub(p.old - p.price) + '</b><br>' + esc(p.name) + ' вылупился у вас на часах</div>' +
+          '<button class="pill pill-black" type="button" id="againBtn">Вернуться к свайпам</button>' +
+        '</section>');
+      el.querySelector("#againBtn").addEventListener("click", function () { go("deck"); });
+      return el;
+    }
+  };
+
+  // ---------- deck & swipe ----------
+  function drawDeck(deckEl) {
+    deckEl.innerHTML = "";
+    if (!state.deck.length) {
+      deckEl.appendChild(h('<div class="empty"><div class="cutout" style="width:120px;height:120px;margin:0"><div class="art">' + bird({ comb: null }) + '</div></div><b>все цыпочки просмотрены</b>Новые птички прилетят завтра<button class="pill pill-white" type="button" id="resetBtn" style="margin-top:6px">Показать снова</button></div>'));
+      deckEl.querySelector("#resetBtn").addEventListener("click", function () { state.deck = PRODUCTS.slice(); drawDeck(deckEl); renderRail(); });
+      return;
+    }
+    var show = state.deck.slice(0, 3);
+    for (var i = show.length - 1; i >= 0; i--) {
+      var p = show[i];
+      var card = h(
+        '<div class="card' + (i === 1 ? ' behind' : i === 2 ? ' behind2' : '') + '" data-id="' + p.id + '">' +
+          '<div class="art" style="background:' + p.bg + '">' + p.art() + '<span class="tag glass">−' + pct(p) + '% после мэтча</span></div>' +
+          '<div class="info"><div><p class="name">' + esc(p.name) + '</p><div class="what">' + esc(p.what) + '</div></div><div class="cost"><s>' + rub(p.old) + '</s><b>' + rub(p.price) + '</b></div></div>' +
+          '<div class="stamp like">хочу</div><div class="stamp nope">мимо</div>' +
+        '</div>');
+      deckEl.appendChild(card);
+      if (i === 0) bindDrag(card, deckEl);
+    }
+  }
+
+  function bindDrag(card, deckEl) {
+    var sx = 0, sy = 0, dx = 0, dy = 0, dragging = false;
+    var like = card.querySelector(".like"), nope = card.querySelector(".nope");
+    card.addEventListener("pointerdown", function (e) {
+      dragging = true; sx = e.clientX; sy = e.clientY; dx = dy = 0;
+      card.setPointerCapture(e.pointerId); card.style.transition = "none";
+    });
+    card.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      dx = e.clientX - sx; dy = e.clientY - sy;
+      card.style.transform = "translate(" + dx + "px," + dy + "px) rotate(" + dx / 14 + "deg)";
+      like.style.opacity = Math.max(0, Math.min(1, dx / 90));
+      nope.style.opacity = Math.max(0, Math.min(1, -dx / 90));
+    });
+    function end() {
+      if (!dragging) return; dragging = false;
+      if (Math.abs(dx) > 100) fly(card, deckEl, dx > 0 ? 1 : -1, dy);
+      else {
+        card.style.transition = "transform .3s cubic-bezier(.2,1.4,.4,1)";
+        card.style.transform = ""; like.style.opacity = 0; nope.style.opacity = 0;
+      }
+    }
+    card.addEventListener("pointerup", end);
+    card.addEventListener("pointercancel", end);
+  }
+
+  function flick(deckEl, dir) {
+    var top = deckEl.querySelector(".card:last-child");
+    if (!top || top.dataset.gone) return;
+    top.querySelector(dir > 0 ? ".like" : ".nope").style.opacity = 1;
+    fly(top, deckEl, dir, 0);
+  }
+
+  function fly(card, deckEl, dir, dy) {
+    card.dataset.gone = "1";
+    card.style.transition = "transform .4s ease-in";
+    card.style.transform = "translate(" + dir * 520 + "px," + (dy + 40) + "px) rotate(" + dir * 30 + "deg)";
+    var p = state.deck.shift();
+    setTimeout(function () {
+      if (dir > 0) {
+        state.current = p;
+        if (!state.liked.some(function (x) { return x.id === p.id; })) state.liked.push(p);
+        go("match");
+      } else { drawDeck(deckEl); renderRail(); }
+    }, 380);
+  }
+
+  // ---------- tabs ----------
+  var CHICK_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="14" cy="8" r="4.5"/><ellipse cx="11" cy="16" rx="8" ry="6"/><path d="M18 7.5l4 1.2-4 1.3z"/></svg>';
+  function tabbar(active) {
+    var tabs = [["deck", ICON.cards, "Свайпы"], ["liked", ICON.likes, "Мэтчи"], ["mypet", CHICK_ICON, "Цыпа"], ["profile", ICON.user, "Профиль"]];
+    return '<nav class="tabbar" aria-label="Разделы">' + tabs.map(function (t) {
+      var badge = t[0] === "liked" && state.liked.length ? '<span class="badge">' + state.liked.length + '</span>'
+        : t[0] === "mypet" && state.pet && moodOf(state.pet).key !== "happy" && moodOf(state.pet).key !== "ok" && moodOf(state.pet).key !== "sleep" ? '<span class="badge">!</span>' : '';
+      return '<button class="tab" type="button" data-tab="' + t[0] + '"' + (t[0] === active ? ' aria-current="page"' : '') + '>' + t[1] + t[2] + badge + '</button>';
+    }).join("") + '</nav>';
+  }
+  function bindTabs(el) {
+    el.querySelector(".tabbar").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-tab]"); if (!b) return;
+      var id = b.getAttribute("data-tab");
+      if (id === "liked") openLiked(el);
+      else if (id !== state.screen) go(id);
+    });
+  }
+  function bar(label, icon, v, color) {
+    return '<div class="prow"><span class="pic">' + icon + '</span><span class="pl">' + label + '</span><i><span style="width:' + Math.round(v) + '%;background:' + color + '"></span></i><b>' + Math.round(v) + '</b></div>';
+  }
+  function plural(n, a, b, c) { var n10 = n % 10, n100 = n % 100; return n10 === 1 && n100 !== 11 ? a : n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14) ? b : c; }
+  function refreshPhone() {
+    var pet = state.pet;
+    if (state.screen === "mypet" && pet) {
+      var art = document.getElementById("ppArt"); if (!art) return;
+      var m = moodOf(pet);
+      if (art.dataset.mood !== m.key) { art.dataset.mood = m.key; art.innerHTML = petSVG(pet, m.key); }
+      document.getElementById("ppMeta").innerHTML = '<span>' + m.text + '</span><span>' + state.grains + ' ' + plural(state.grains, "зерно", "зерна", "зёрен") + '</span><span>' + state.steps.toLocaleString("ru-RU") + ' шагов</span>';
+      document.getElementById("ppStats").innerHTML = STATS.map(function (s) { return bar(STAT[s].t, STAT[s].icon, pet[s], STAT[s].c); }).join("");
+    }
+    if (state.screen === "profile") {
+      var tiles = document.getElementById("pfTiles"); if (!tiles) return;
+      tiles.innerHTML =
+        '<div><b>' + state.orders + '</b><small>' + plural(state.orders, "заказ", "заказа", "заказов") + '</small></div>' +
+        '<div><b>' + state.steps.toLocaleString("ru-RU") + '</b><small>шагов сегодня</small></div>' +
+        '<div><b>' + state.grains + '</b><small>' + plural(state.grains, "зерно", "зерна", "зёрен") + '</small></div>';
+      document.getElementById("pfOrders").innerHTML = state.orderList.length ? state.orderList.slice().reverse().map(function (o) {
+        return '<div class="row"><div class="thumb" style="background:' + o.p.bg + '">' + o.p.art() + '</div><div class="t">' + esc(o.p.name) + '<small>' + o.num + ' · ' + esc(o.p.what) + (o.size ? ', ' + o.size : '') + '</small></div><b class="osum">' + rub(o.p.price) + '</b></div>';
+      }).join("") : '<p class="none">Пока нет заказов. Смахните понравившуюся цыпу вправо.</p>';
+    }
+  }
+
+  function openLiked(screenEl) {
+    var bg = h('<div class="sheet-bg"><div class="lsheet" role="dialog" aria-label="Мои мэтчи"><div class="grab"></div><h3>мои мэтчи</h3>' +
+      (state.liked.length ? state.liked.map(function (p) {
+        return '<div class="row"><div class="thumb" style="background:' + p.bg + '">' + p.art() + '</div><div class="t">' + esc(p.name) + '<small>' + esc(p.what) + ' · ' + rub(p.price) + '</small></div><button type="button" data-id="' + p.id + '">Купить</button></div>';
+      }).join("") : '<p style="color:var(--muted);margin:0 0 6px">Пока пусто. Смахните карточку вправо, чтобы получить мэтч.</p>') +
+      '</div></div>');
+    bg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-id]");
+      if (b) { state.current = PRODUCTS.find(function (p) { return p.id === b.dataset.id; }); go("product"); return; }
+      if (e.target === bg) bg.remove();
+    });
+    screenEl.appendChild(bg);
+  }
+
+  // ---------- watch: тамагочи ----------
+  var wstage = document.getElementById("wstage");
+  var wcase = document.getElementById("wcase");
+  var gameTimers = [];
+
+  var STAT = {
+    hunger: { t: "сытость", c: "#FFC93C", icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="#FFC93C"><ellipse cx="8" cy="9" rx="3" ry="4.5" transform="rotate(-20 8 9)"/><ellipse cx="16" cy="9" rx="3" ry="4.5" transform="rotate(20 16 9)"/><ellipse cx="12" cy="17" rx="3" ry="4.5"/></svg>' },
+    clean: { t: "чистота", c: "#5DB6FF", icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="#5DB6FF"><path d="M12 2s7 8 7 13a7 7 0 0 1-14 0c0-5 7-13 7-13z"/></svg>' },
+    fun: { t: "радость", c: "#FF6B5E", icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="#FF6B5E"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.4 3.2 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.8 0 5.9 3.9 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg>' },
+    energy: { t: "энергия", c: "#A98BFF", icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="#A98BFF"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>' }
+  };
+  var STATS = ["hunger", "clean", "fun", "energy"];
+  var MOON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>';
+  var SUN = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4.5" fill="#fff"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>';
+  var ACT_ICON = {
+    feed: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><ellipse cx="8" cy="9" rx="3" ry="4.5" transform="rotate(-20 8 9)"/><ellipse cx="16" cy="9" rx="3" ry="4.5" transform="rotate(20 16 9)"/><ellipse cx="12" cy="17" rx="3" ry="4.5"/></svg>',
+    wash: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2s7 8 7 13a7 7 0 0 1-14 0c0-5 7-13 7-13z"/></svg>',
+    play: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M3.5 9.5c5 2 12 2 17 0M3.5 14.5c5-2 12-2 17 0"/></svg>'
+  };
+
+  function clamp(v) { return Math.max(0, Math.min(100, v)); }
+  function product(id) { return PRODUCTS.find(function (p) { return p.id === id; }); }
+
+  function adopt(p) {
+    state.pet = { id: p.id, name: p.name, hunger: 55, clean: 70, fun: 45, energy: 75, sleeping: false };
+    state.alerts = {};
+  }
+  function ensurePet() { if (!state.pet) adopt(PRODUCTS[1]); }
+
+  // настроение: что сейчас нужнее всего
+  function moodOf(pet) {
+    if (pet.sleeping) return { key: "sleep", text: "спит" };
+    var low = STATS.slice().sort(function (a, b) { return pet[a] - pet[b]; })[0];
+    if (pet[low] >= 65) return { key: "happy", text: "счастлив" };
+    if (pet[low] >= 40) return { key: "ok", text: "всё хорошо" };
+    return { hunger: { key: "hungry", text: "проголодался" }, clean: { key: "dirty", text: "испачкался" }, fun: { key: "bored", text: "скучает" }, energy: { key: "tired", text: "устал, хочет спать" } }[low];
+  }
+  function petSVG(pet, moodKey) {
+    var eyes = { happy: "happy", ok: null, hungry: "sad", dirty: null, bored: "bored", tired: "bored", sleep: "sleep" }[moodKey];
+    var dirt = pet.clean < 55 ? (0.25 + 0.75 * (1 - pet.clean / 55)).toFixed(2) : 0;
+    return bird(Object.assign({}, LOOKS[pet.id] || {}, { mood: eyes, dirt: dirt }));
+  }
+
+  function wtime() { return '<span class="wtime">10:09</span>'; }
+
+  function stopGame() { gameTimers.forEach(clearTimeout); gameTimers.forEach(clearInterval); gameTimers = []; }
+
+  function wgo(id, toast) {
+    stopGame();
+    state.wscreen = id;
+    wstage.innerHTML = "";
+    wstage.appendChild(WS[id](toast));
+    renderRail();
+  }
+  function buzz() { wcase.classList.remove("buzz"); void wcase.offsetWidth; wcase.classList.add("buzz"); }
+  function wtoast(text) {
+    var old = wstage.querySelector(".toast"); if (old) old.remove();
+    var t = h('<div class="toast">' + esc(text) + '</div>');
+    (wstage.firstElementChild || wstage).appendChild(t);
+    setTimeout(function () { t.remove(); }, 2600);
+  }
+  function floatUp(host, html, x, y) {
+    var f = h('<span class="float" style="left:' + x + 'px;top:' + y + 'px">' + html + '</span>');
+    host.appendChild(f); setTimeout(function () { f.remove(); }, 1400);
+  }
+
+  // шаги → зёрна
+  function walk() {
+    state.steps += 1000; state.grains += 10;
+    if (state.wscreen === "pet") refreshPet(true);
+    else if (state.wscreen === "face") wgo("face");
+    renderRail();
+    var g = document.querySelector(".grains small");
+    if (g) g.textContent = phoneGrainsLine();
+  }
+
+  // время идёт: цыпа голодает, пачкается и скучает
+  function decay(k) {
+    var pet = state.pet; if (!pet) return;
+    var before = { hunger: pet.hunger, clean: pet.clean, fun: pet.fun, energy: pet.energy };
+    var sl = pet.sleeping;
+    pet.hunger = clamp(pet.hunger - (sl ? 0.7 : 1.6) * k);
+    pet.clean = clamp(pet.clean - (sl ? 0.3 : 1.0) * k);
+    pet.fun = clamp(pet.fun - (sl ? 0.3 : 1.4) * k);
+    pet.energy = clamp(pet.energy + (sl ? 7 : -1.1) * k);
+    if (sl && pet.energy >= 100) {
+      pet.sleeping = false; buzz();
+      if (state.wscreen === "pet" || state.wscreen === "face") wtoast(pet.name + " выспался и бодр");
+    }
+    var msgs = { hunger: " проголодался, покормите", clean: " испачкался, пора мыться", fun: " скучает, поиграйте с ним", energy: " устал, уложите спать" };
+    if (!pet.sleeping) for (var s in msgs) {
+      if (before[s] >= 35 && pet[s] < 35) { buzz(); if (state.wscreen === "pet" || state.wscreen === "face") wtoast(pet.name + msgs[s]); }
+    }
+    if (state.wscreen === "pet") refreshPet();
+    else if (state.wscreen === "face") refreshFace();
+    renderRail();
+  }
+  setInterval(function () {
+    // шаги идут сами: каждые 100 шагов дают 1 зерно
+    var before = Math.floor(state.steps / 100);
+    state.steps += 40 + Math.floor(Math.random() * 60);
+    state.grains += Math.floor(state.steps / 100) - before;
+    var g = document.querySelector(".grains small");
+    if (g) g.textContent = phoneGrainsLine();
+    if (state.wscreen === "pet") { var w = wstage.querySelector(".wallet"); if (w) w.textContent = state.grains + " зёрен"; }
+    if (state.screen === "mypet" || state.screen === "profile") refreshPhone();
+    if (state.wscreen === "play" || state.wscreen === "flap" || state.wscreen === "wash" || state.wscreen === "hatch") return;
+    decay(1);
+  }, 3000);
+
+  function feed() {
+    var pet = state.pet, el = wstage.querySelector(".pet-s");
+    if (!pet || !el) return;
+    if (pet.sleeping) { wtoast("Тсс, " + pet.name + " спит"); return; }
+    if (pet.hunger >= 92) { wtoast(pet.name + " сыт и отворачивается"); return; }
+    if (state.grains < 10) { wtoast("Нужно 10 зёрен. Пройдитесь, и зёрна появятся"); return; }
+    state.grains -= 10;
+    pet.hunger = clamp(pet.hunger + 32);
+    var stageEl = el.querySelector(".stage-w"), petEl = el.querySelector(".pet");
+    [70, 92, 112].forEach(function (x, i) {
+      setTimeout(function () {
+        var g = h('<span class="grain drop" style="left:' + x + 'px;top:62px"></span>');
+        stageEl.appendChild(g); setTimeout(function () { g.remove(); }, 700);
+      }, i * 160);
+    });
+    petEl.classList.remove("idle", "slow"); petEl.classList.add("eat");
+    setTimeout(function () {
+      refreshPet(true);
+      floatUp(stageEl, STAT.fun.icon, 120, 20);
+    }, 1500);
+    renderRail();
+  }
+
+  function needDot(v) { return v < 35 ? '<span class="need"></span>' : ''; }
+
+  function refreshPet(force) {
+    var el = wstage.querySelector(".pet-s"), pet = state.pet;
+    if (!el || !pet) return;
+    el.classList.toggle("asleep", !!pet.sleeping);
+    STATS.forEach(function (s) {
+      var b = el.querySelector('[data-stat="' + s + '"]');
+      b.classList.toggle("low", pet[s] < 35);
+      b.querySelector("i span").style.width = Math.round(pet[s]) + "%";
+    });
+    el.querySelector(".wallet").textContent = state.grains + " зёрен";
+    var m = moodOf(pet);
+    el.querySelector(".mood").innerHTML = '<b>' + esc(pet.name) + '</b> ' + m.text;
+    var dirtBucket = pet.clean < 55 ? Math.round(pet.clean / 10) : "c";
+    var sig = m.key + "|" + dirtBucket;
+    var petEl = el.querySelector(".pet");
+    if (force || petEl.dataset.sig !== sig || petEl.classList.contains("eat")) {
+      petEl.dataset.sig = sig;
+      petEl.innerHTML = petSVG(pet, m.key);
+      petEl.className = "pet " + (m.key === "sleep" ? "breathe" : m.key === "hungry" || m.key === "bored" || m.key === "tired" ? "slow" : "idle");
+      var stageEl = el.querySelector(".stage-w");
+      stageEl.querySelectorAll(".fly-dot, .dots3, .zzz").forEach(function (n) { n.remove(); });
+      if (m.key === "sleep") stageEl.insertAdjacentHTML("beforeend", '<span class="zzz">z</span><span class="zzz" style="animation-delay:-.8s">z</span><span class="zzz" style="animation-delay:-1.6s">Z</span>');
+      if (m.key === "dirty") { stageEl.insertAdjacentHTML("beforeend", '<span class="fly-dot" style="left:58px;top:24px"></span><span class="fly-dot" style="left:122px;top:40px;animation-delay:-.6s"></span>'); }
+      if (m.key === "bored") stageEl.insertAdjacentHTML("beforeend", '<span class="dots3">…</span>');
+    }
+    el.querySelector(".act.feed").innerHTML = ACT_ICON.feed + needDot(pet.hunger);
+    el.querySelector(".act.wash").innerHTML = ACT_ICON.wash + needDot(pet.clean);
+    el.querySelector(".act.play").innerHTML = ACT_ICON.play + needDot(pet.fun);
+    var sb = el.querySelector(".act.sleep");
+    sb.innerHTML = (pet.sleeping ? SUN : MOON) + (pet.sleeping ? '' : needDot(pet.energy));
+    sb.setAttribute("aria-label", pet.sleeping ? "Разбудить" : "Уложить спать");
+  }
+
+  function toggleSleep() {
+    var pet = state.pet; if (!pet) return;
+    if (!pet.sleeping && pet.energy >= 90) { wtoast(pet.name + " полон сил и не хочет спать"); return; }
+    pet.sleeping = !pet.sleeping;
+    if (!pet.sleeping) pet.fun = clamp(pet.fun - 8);
+    refreshPet(true);
+    wtoast(pet.sleeping ? "Спокойной ночи, " + pet.name : pet.name + " проснулся и немного ворчит");
+    renderRail();
+  }
+
+  function refreshFace() {
+    var c = wstage.querySelector("#comp"); if (!c) return;
+    var pet = state.pet;
+    var m = moodOf(pet);
+    c.querySelector(".comp-pet").innerHTML = petSVG(pet, m.key);
+    c.querySelector(".comp-t").innerHTML = esc(pet.name) + '<small>' + m.text + '</small>';
+  }
+
+  document.getElementById("crownBtn").addEventListener("click", function () {
+    wgo(state.wscreen === "face" ? (state.pet ? "pet" : "egg") : "face");
+  });
+  document.getElementById("sideBtn").addEventListener("click", function () { wgo("face"); });
+
+  function eggSVG(cls) {
+    return '<svg class="' + cls + '" viewBox="0 0 80 100" aria-hidden="true"><ellipse cx="40" cy="56" rx="32" ry="40" fill="#FFF6E0"/><ellipse cx="28" cy="40" rx="7" ry="12" fill="#fff"/><circle cx="52" cy="70" r="4" fill="#F1DDB0"/><circle cx="30" cy="78" r="3" fill="#F1DDB0"/></svg>';
+  }
+
+  var WS = {
+    face: function () {
+      var pet = state.pet;
+      var comp = pet
+        ? '<span class="ringsm" style="background:#10306A;border-radius:50%;overflow:hidden"><span class="comp-pet" style="position:absolute;inset:4px 2px -6px;display:grid;place-items:center">' + petSVG(pet, moodOf(pet).key) + '</span></span><span class="comp-t">' + esc(pet.name) + '<small>' + moodOf(pet).text + '</small></span>'
+        : '<span class="ringsm" style="display:grid;place-items:center">' + eggSVG("") .replace('<svg class=""', '<svg width="26"') + '</span><span class="comp-t">Яйцо<small>ждёт цыпу</small></span>';
+      var el = h('<section class="ws face"><div class="big-t">10:09</div><div class="date">пт, 13 ноября</div>' +
+        '<button class="comp" type="button" id="comp">' + comp + '</button></section>');
+      el.querySelector("#comp").addEventListener("click", function () { wgo(state.pet ? "pet" : "egg"); });
+      return el;
+    },
+
+    egg: function () {
+      var el = h('<section class="ws egg-s"><span class="wtitle">цыпа</span>' + wtime() +
+        eggSVG("egg-big") + '<b>тут будет цыпа</b><p>Купите мерч на iPhone, и цыпа вылупится на часах</p></section>');
+      return el;
+    },
+
+    hatch: function () {
+      ensurePet();
+      var pet = state.pet;
+      var el = h('<section class="ws egg-s hatch">' + wtime() + eggSVG("egg-big") +
+        '<div class="born"><div class="pet">' + petSVG(pet, "happy") + '</div><b>привет, я ' + esc(pet.name) + '!</b>' +
+        '<button class="wbtn sky" type="button" id="hiBtn" style="width:auto;padding:8px 16px">Привет!</button></div></section>');
+      el.querySelector("#hiBtn").addEventListener("click", function () { wgo("pet"); });
+      return el;
+    },
+
+    pet: function (toast) {
+      ensurePet();
+      var pet = state.pet;
+      var bars = STATS.map(function (s) {
+        return '<div class="bar" data-stat="' + s + '" title="' + STAT[s].t + '">' + STAT[s].icon + '<i><span style="width:' + Math.round(pet[s]) + '%;background:' + STAT[s].c + '"></span></i></div>';
+      }).join("");
+      var el = h('<section class="ws pet-s"><span class="wallet"></span>' + wtime() +
+        '<div class="bars">' + bars + '</div>' +
+        '<div class="stage-w"><div class="pet idle"></div></div>' +
+        '<div class="mood"></div>' +
+        '<div class="acts" style="margin-top:4px">' +
+          '<button class="act feed" type="button" aria-label="Покормить"></button>' +
+          '<button class="act wash" type="button" aria-label="Помыть"></button>' +
+          '<button class="act play" type="button" aria-label="Поиграть"></button>' +
+          '<button class="act sleep" type="button" aria-label="Уложить спать"></button>' +
+        '</div></section>');
+      function awake(fn) { return function () { if (state.pet.sleeping) { wtoast("Тсс, " + state.pet.name + " спит. Сначала разбудите"); return; } fn(); }; }
+      el.querySelector(".act.feed").addEventListener("click", feed);
+      el.querySelector(".act.wash").addEventListener("click", awake(function () { wgo("wash"); }));
+      el.querySelector(".act.play").addEventListener("click", awake(function () {
+        if (state.pet.energy < 15) { wtoast(state.pet.name + " слишком устал для игр. Уложите спать"); return; }
+        wgo("games");
+      }));
+      el.querySelector(".act.sleep").addEventListener("click", toggleSleep);
+      setTimeout(function () { refreshPet(true); if (toast) wtoast(toast); }, 0);
+      return el;
+    },
+
+    wash: function () {
+      ensurePet();
+      var pet = state.pet;
+      if (pet.clean >= 95) { setTimeout(function () { wgo("pet", pet.name + " и так чистый"); }, 0); return h('<section class="ws wash-s"></section>'); }
+      var el = h('<section class="ws wash-s"><span class="wtitle" style="color:#fff">мойка</span>' + wtime() +
+        '<div class="scrub" id="scrub"><div class="pet" style="width:96px"></div></div>' +
+        '<div class="meter"><span></span></div>' +
+        '<button class="wbtn" type="button" id="rubBtn" style="background:rgba(255,255,255,.22)">Трите цыпу пальцем</button></section>');
+      var scrub = el.querySelector("#scrub"), petEl = scrub.querySelector(".pet"), meter = el.querySelector(".meter span");
+      var last = 0, done = false;
+      function draw() { petEl.innerHTML = petSVG(pet, pet.clean > 80 ? "happy" : null); meter.style.width = pet.clean + "%"; }
+      function rub(x, y, amt) {
+        if (done) return;
+        pet.clean = clamp(pet.clean + amt);
+        var s = 8 + Math.random() * 14;
+        var b = h('<span class="bubble" style="width:' + s + 'px;height:' + s + 'px;left:' + (x - s / 2) + 'px;top:' + (y - s / 2) + 'px"></span>');
+        scrub.appendChild(b); setTimeout(function () { b.remove(); }, 1200);
+        draw();
+        if (pet.clean >= 100) {
+          done = true;
+          floatUp(scrub, '<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5L5.7 21 8 13.8 2 9.2h7.6z"/></svg>', 120, 20);
+          setTimeout(function () { wgo("pet", pet.name + " сияет! Чистюля"); }, 900);
+        }
+      }
+      var down = false;
+      scrub.addEventListener("pointerdown", function (e) { down = true; scrub.setPointerCapture(e.pointerId); });
+      scrub.addEventListener("pointerup", function () { down = false; });
+      scrub.addEventListener("pointermove", function (e) {
+        if (!down) return;
+        var now = Date.now(); if (now - last < 35) return; last = now;
+        var r = scrub.getBoundingClientRect(), k = (wfitEl.clientWidth / 250) || 1;
+        rub((e.clientX - r.left) / k, (e.clientY - r.top) / k, 2.2);
+      });
+      el.querySelector("#rubBtn").addEventListener("click", function () {
+        for (var i = 0; i < 5; i++) rub(50 + Math.random() * 80, 30 + Math.random() * 80, 4);
+      });
+      draw();
+      return el;
+    },
+
+    play: function () {
+      ensurePet();
+      var pet = state.pet;
+      var el = h('<section class="ws game-s"><span class="wtitle" style="color:#FFC93C">лови зёрна</span>' + wtime() +
+        '<div class="hud" style="margin-top:2px"><span id="score">0 очков</span><span id="time">10 с</span></div>' +
+        '<div class="arena" id="arena"></div></section>');
+      var arena = el.querySelector("#arena"), scoreEl = el.querySelector("#score"), timeEl = el.querySelector("#time");
+      var score = 0, left = 10;
+      function spawn() {
+        var worm = Math.random() < 0.2;
+        var t = h('<button class="target' + (worm ? ' worm' : '') + '" type="button" aria-label="' + (worm ? 'Червяк, 3 очка' : 'Зерно, 1 очко') + '" style="left:' + (14 + Math.random() * 72) + '%;top:' + (14 + Math.random() * 72) + '%"></button>');
+        t.addEventListener("pointerdown", function (e) {
+          e.preventDefault();
+          if (t.classList.contains("got")) return;
+          t.classList.add("got"); score += worm ? 3 : 1;
+          var n10 = score % 10, n100 = score % 100;
+          scoreEl.textContent = score + (n10 === 1 && n100 !== 11 ? " очко" : n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14) ? " очка" : " очков");
+          setTimeout(function () { t.remove(); }, 250);
+        });
+        arena.appendChild(t);
+        gameTimers.push(setTimeout(function () { if (!t.classList.contains("got")) t.remove(); }, worm ? 800 : 1100));
+      }
+      function end() {
+        stopGame();
+        arena.innerHTML = "";
+        var gain = Math.min(60, score * 5);
+        pet.fun = clamp(pet.fun + gain);
+        pet.energy = clamp(pet.energy - 8);
+        var over = h('<div class="game-end"><b>' + score + '</b><small>' + esc(pet.name) + ' повеселился: +' + gain + ' радости</small>' +
+          '<div style="display:flex;gap:6px;width:100%"><button class="wbtn" type="button" id="again">Ещё</button><button class="wbtn yolk" type="button" id="doneG">Готово</button></div></div>');
+        el.appendChild(over);
+        over.querySelector("#again").addEventListener("click", function () { wgo("play"); });
+        over.querySelector("#doneG").addEventListener("click", function () { wgo("pet"); });
+        renderRail();
+      }
+      setTimeout(function () {
+        spawn();
+        gameTimers.push(setInterval(spawn, 620));
+        gameTimers.push(setInterval(function () { left--; timeEl.textContent = left + " с"; if (left <= 0) end(); }, 1000));
+      }, 300);
+      return el;
+    },
+
+    games: function () {
+      ensurePet();
+      var el = h('<section class="ws games-s"><span class="wtitle">игры</span>' + wtime() +
+        '<button class="gtile g1" type="button" id="gCatch"><b>лови зёрна</b><small>тапайте зёрна, 10 секунд</small></button>' +
+        '<button class="gtile g2" type="button" id="gFlap"><b>над забором</b><small>тап — взмах крыльями' + (state.flapBest ? ' · рекорд ' + state.flapBest : '') + '</small></button>' +
+        '</section>');
+      el.querySelector("#gCatch").addEventListener("click", function () { wgo("play"); });
+      el.querySelector("#gFlap").addEventListener("click", function () { wgo("flap"); });
+      return el;
+    },
+
+    flap: function () {
+      ensurePet();
+      var pet = state.pet, look = Object.assign({ body: "#FFD24A", wing: "#F7B21C", beak: "#FF8A1F", comb: "#FF4436" }, LOOKS[pet.id] || {});
+      var W = 174, H = 196, GROUND = 14, GAP = 70, PW = 24;
+      var el = h('<section class="ws flap-s"><span class="wtitle" style="color:#fff">над забором</span>' + wtime() +
+        '<div class="flapbox"><canvas width="' + W * 2 + '" height="' + H * 2 + '" aria-label="Игра: тапайте, чтобы цыпа взмахнула крыльями"></canvas>' +
+        '<div class="flap-hud" id="fs">0</div><div class="flap-tip" id="tip">Тапните, чтобы взлететь</div></div></section>');
+      var cv = el.querySelector("canvas"), ctx = cv.getContext("2d");
+      ctx.scale(2, 2);
+      var hud = el.querySelector("#fs"), tip = el.querySelector("#tip");
+      var g = { mode: "ready", y: H / 2 - 10, vy: 0, t: 0, score: 0, posts: [], flapT: 0 };
+      function addPost(x) { g.posts.push({ x: x, gapY: 34 + Math.random() * (H - GROUND - GAP - 60), passed: false }); }
+      addPost(W + 30); addPost(W + 30 + 104);
+      function flap() {
+        if (g.mode === "over") return;
+        if (g.mode === "ready") { g.mode = "play"; tip.hidden = true; }
+        g.vy = -4.3; g.flapT = 8;
+      }
+      cv.addEventListener("pointerdown", function (e) { e.preventDefault(); flap(); });
+      function key(e) { if (state.wscreen !== "flap") { document.removeEventListener("keydown", key); return; } if (e.code === "Space") { e.preventDefault(); flap(); } }
+      document.addEventListener("keydown", key);
+
+      function drawBird(x, y, rot) {
+        ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+        ctx.fillStyle = look.body; ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
+        if (look.comb) { ctx.fillStyle = look.comb; ctx.beginPath(); ctx.arc(1, -10, 3.2, 0, 7); ctx.arc(5, -9, 3, 0, 7); ctx.fill(); }
+        ctx.fillStyle = look.beak; ctx.beginPath(); ctx.moveTo(9, -2); ctx.lineTo(16, 1); ctx.lineTo(9, 4); ctx.fill();
+        ctx.fillStyle = "#0E1B33"; ctx.beginPath(); ctx.arc(4.5, -3, 1.9, 0, 7); ctx.fill();
+        ctx.fillStyle = look.wing; ctx.beginPath(); ctx.ellipse(-3, g.flapT > 0 ? -4 : 3, 6.5, 3.6, g.flapT > 0 ? -0.6 : 0.3, 0, 7); ctx.fill();
+        ctx.restore();
+      }
+      function drawPost(p) {
+        var top = p.gapY, bot = p.gapY + GAP;
+        ctx.fillStyle = "#C88A4E"; ctx.fillRect(p.x, 0, PW, top); ctx.fillRect(p.x, bot, PW, H - GROUND - bot);
+        ctx.fillStyle = "#9C6435"; ctx.fillRect(p.x - 3, top - 8, PW + 6, 8); ctx.fillRect(p.x - 3, bot, PW + 6, 8);
+        ctx.fillStyle = "rgba(255,255,255,.18)"; ctx.fillRect(p.x + 4, 0, 3, top - 8); ctx.fillRect(p.x + 4, bot + 8, 3, H - GROUND - bot - 8);
+      }
+      function frame() {
+        if (!document.body.contains(cv)) return;
+        g.t++;
+        var sky = ctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, "#1E8BFF"); sky.addColorStop(1, "#BFE3FF");
+        ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = "rgba(255,255,255,.7)";
+        var cx = (g.t * 0.3) % (W + 60);
+        ctx.beginPath(); ctx.ellipse(W - cx + 30, 40, 22, 8, 0, 0, 7); ctx.ellipse((W - cx + 120) % (W + 60) - 30, 90, 18, 6, 0, 0, 7); ctx.fill();
+
+        if (g.mode === "play") {
+          g.vy += 0.27; g.y += g.vy;
+          g.posts.forEach(function (p) {
+            p.x -= 1.7;
+            if (!p.passed && p.x + PW < 44) { p.passed = true; g.score++; hud.textContent = g.score; }
+          });
+          if (g.posts[0].x < -PW - 6) { g.posts.shift(); addPost(g.posts[g.posts.length - 1].x + 104); }
+          var hit = g.y > H - GROUND - 9 || g.y < 6;
+          g.posts.forEach(function (p) {
+            if (44 + 9 > p.x - 3 && 44 - 9 < p.x + PW + 3 && (g.y - 9 < p.gapY || g.y + 9 > p.gapY + GAP)) hit = true;
+          });
+          if (hit) over();
+        } else if (g.mode === "ready") {
+          g.y = H / 2 - 10 + Math.sin(g.t / 10) * 5;
+        }
+        if (g.flapT > 0) g.flapT--;
+        g.posts.forEach(drawPost);
+        ctx.fillStyle = "#3FB56A"; ctx.fillRect(0, H - GROUND, W, GROUND);
+        ctx.fillStyle = "#2E9455";
+        var off = g.mode === "play" ? (g.t * 1.7) % 10 : 0;
+        for (var i = -off; i < W; i += 10) ctx.fillRect(i, H - GROUND, 5, 4);
+        drawBird(44, g.y, Math.max(-0.5, Math.min(1.1, g.vy / 7)));
+        if (g.mode !== "over") requestAnimationFrame(frame);
+      }
+      function over() {
+        g.mode = "over";
+        buzz();
+        var gain = Math.min(60, 6 + g.score * 8);
+        pet.fun = clamp(pet.fun + gain);
+        pet.energy = clamp(pet.energy - 10);
+        var best = state.flapBest || 0;
+        if (g.score > best) state.flapBest = g.score;
+        var o = h('<div class="game-end" style="background:rgba(0,0,0,.55)"><b>' + g.score + '</b><small>' + (g.score > best && g.score > 0 ? 'Новый рекорд! ' : '') + '+' + gain + ' радости</small>' +
+          '<div style="display:flex;gap:6px;width:100%"><button class="wbtn" type="button" id="againF">Ещё</button><button class="wbtn yolk" type="button" id="doneF">Готово</button></div></div>');
+        el.appendChild(o);
+        o.querySelector("#againF").addEventListener("click", function () { wgo("flap"); });
+        o.querySelector("#doneF").addEventListener("click", function () { wgo("pet"); });
+        renderRail();
+      }
+      requestAnimationFrame(frame);
+      return el;
+    }
+  };
+
+  var fitEl = document.getElementById("fit"), phoneEl = document.getElementById("phone");
+  var wfitEl = document.getElementById("wfit"), watchEl = document.getElementById("watch");
+  function fit() {
+    var vw = document.documentElement.clientWidth - 32, vh = window.innerHeight - 64;
+    var side = vw >= 390 + 250 + 48;            // устройства рядом или друг под другом
+    var s = side ? Math.min(1, vh / 812, (vw - 48) / 640) : Math.min(1, vw / 390, Math.max(vh, 560) / 812);
+    s = Math.max(s, 0.45);
+    fitEl.style.width = 390 * s + "px"; fitEl.style.height = 812 * s + "px";
+    wfitEl.style.width = 250 * s + "px"; wfitEl.style.height = 330 * s + "px";
+    phoneEl.style.transform = "scale(" + s + ")";
+    watchEl.style.transform = "scale(" + s + ")";
+  }
+  fit();
+
+  wgo("face");
+  go("splash");
+})();
+</script>
