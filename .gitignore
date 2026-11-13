@@ -1,2 +1,5 @@
 .claude/
 .DS_Store
+watch/build/
+xcuserdata/
+*.xcworkspace/xcuserdata/
