@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Птички — часы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700;800;900&family=Shantell+Sans:wght@600;700&display=swap">
+<style>
+/* Веб-копия приложения «Птички» для Apple Watch: чернильная цыпа на поле цвета её товара. */
+:root {
+  --ink: #151515; --paper: #FFFFFF; --ground: #F3F2EF;
+  --pink: #FF3D8B; --yellow: #FFD60A; --lime: #C8F23C; --cyan: #36C8FF; --lilac: #A99BFF; --tangerine: #FF8A2A;
+  --hunger: #FFD60A; --clean: #36C8FF; --fun: #FF3D8B; --energy: #A99BFF;
+  --display: "Rubik", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --hand: "Shantell Sans", "Comic Sans MS", cursive;
+  --body: "Rubik", -apple-system, system-ui, sans-serif;
+  --spring: cubic-bezier(.2, 1.5, .35, 1);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #000; color: var(--ink); font-family: var(--body); overflow: hidden; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+button { font-family: inherit; color: inherit; }
+:is(button, [role="button"]):focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+#w { position: fixed; inset: 0; }
+.ws { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 30px 10px 8px; animation: enter .32s ease both; background: var(--ground); }
+@keyframes enter { from { opacity: 0; transform: translateX(14px); } }
+.ws.back-in { animation-name: enter-back; }
+@keyframes enter-back { from { opacity: 0; transform: translateX(-14px); } }
+.top { position: absolute; top: 8px; left: 12px; right: 14px; display: flex; align-items: center; justify-content: space-between; z-index: 6; height: 22px; }
+.time { font: 700 14px var(--body); font-variant-numeric: tabular-nums; }
+.title { font: 700 13px var(--display); opacity: .75; }
+.backbtn { width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid var(--ink); background: var(--paper); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.wallet { font: 800 13px var(--display); display: flex; gap: 4px; align-items: center; font-variant-numeric: tabular-nums; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 999px; padding: 1px 8px 1px 5px; }
+.btn { border: 2.5px solid var(--ink); border-radius: 999px; padding: 8px 12px; font: 800 13px var(--display); color: var(--ink); background: var(--paper); cursor: pointer; }
+.btn.sky, .btn.ink { background: var(--ink); color: var(--paper); }
+.btn.yolk { background: var(--lime); }
+.btn:active, .act:active, .tile:active { transform: scale(.94); }
+.toast { position: absolute; left: 10px; right: 10px; bottom: 50px; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 14px; padding: 6px 10px; font: 700 12px/1.3 var(--hand); text-align: center; z-index: 20; animation: tin .25s ease both; pointer-events: none; }
+@keyframes tin { from { opacity: 0; transform: translateY(8px); } }
+.buzz { animation: buzz .4s linear 2 !important; }
+@keyframes buzz { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+
+/* яйцо и выбор цыпы */
+.egg-s { align-items: center; justify-content: center; text-align: center; gap: 6px; background: var(--yellow); padding-top: 26px; }
+.egg { width: 58px; animation: wobble 1.8s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes wobble { 0%, 60%, 100% { transform: rotate(0); } 70% { transform: rotate(-8deg); } 80% { transform: rotate(7deg); } 90% { transform: rotate(-4deg); } }
+.egg-s b { font: 900 16px var(--display); letter-spacing: -.02em; }
+.egg-s p { margin: 0; font: 600 11.5px/1.3 var(--hand); }
+.list { overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 2px; scrollbar-width: none; }
+.list::-webkit-scrollbar { display: none; }
+.pick { display: flex; align-items: center; gap: 8px; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 16px; padding: 3px 10px 3px 3px; text-align: left; cursor: pointer; }
+.pick .ic { width: 38px; height: 38px; flex: none; border-radius: 12px; overflow: hidden; }
+.pick b { display: block; font: 800 13px var(--display); }
+.pick small { font-size: 10.5px; opacity: .75; }
+
+/* вылупление */
+.hatch { align-items: center; justify-content: center; text-align: center; background: var(--yellow); }
+.hatch .shell { position: absolute; left: 50%; top: 50%; width: 64px; height: 80px; margin: -40px 0 0 -32px; animation: crack .9s ease-in both; }
+@keyframes crack { 0% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } 75% { transform: rotate(-8deg); } 100% { transform: scale(1.6); opacity: 0; } }
+.hatch .born { display: flex; flex-direction: column; align-items: center; gap: 6px; animation: pop .6s .8s var(--spring) both; }
+.hatch .born .chick { width: 96px; }
+.hatch .born b { font: 900 14px var(--display); }
+@keyframes pop { from { transform: scale(.3); opacity: 0; } }
+
+/* питомец: экран залит цветом его товара */
+.pet-s { padding: 32px 8px 8px; align-items: center; transition: background-color .6s; }
+.pet-s.asleep { background: #C9C2FF !important; }
+.bars { display: flex; gap: 5px; width: 100%; padding: 0 4px; }
+.bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar svg { width: 11px; height: 11px; }
+.bar i { display: block; width: 100%; height: 8px; border-radius: 99px; border: 2px solid var(--ink); background: var(--paper); overflow: hidden; }
+.bar i span { display: block; height: 100%; transition: width .5s ease; }
+.bar.low i span { animation: blink 1s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: .3; } }
+.stage { position: relative; flex: 1; width: 100%; display: grid; place-items: center; min-height: 0; }
+.stage .chick { width: 104px; transform-origin: 50% 92%; cursor: pointer; }
+.chick.idle { animation: hop 1.2s ease-in-out infinite; }
+.chick.slow { animation: hop 2.4s ease-in-out infinite; }
+.chick.breathe { animation: breathe 2.8s ease-in-out infinite; }
+.chick.eat { animation: munch .18s ease-in-out 8; }
+.chick.boing { animation: boing .6s var(--spring); }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-6px) scaleY(1.03); } 60% { transform: translateY(0) scaleY(.96); } }
+@keyframes breathe { 50% { transform: scale(1.04, .97); } }
+@keyframes munch { 50% { transform: rotate(-8deg) translateY(3px); } }
+@keyframes boing { 25% { transform: translateY(3px) scale(1.12, .86); } 55% { transform: translateY(-18px) scale(.94, 1.08); } }
+.zz { position: absolute; left: 60%; top: 22%; font: 900 14px var(--display); color: var(--ink); animation: zz 2.4s ease-out infinite; pointer-events: none; }
+@keyframes zz { from { transform: translate(0,0) scale(.6); opacity: 0; } 20% { opacity: 1; } to { transform: translate(20px,-38px) scale(1.2); opacity: 0; } }
+.dots { position: absolute; top: 2px; right: 22px; background: var(--paper); border: 2px solid var(--ink); border-radius: 10px; padding: 0 7px; font: 900 13px/16px var(--display); }
+.fly { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--ink); animation: fly 1.4s linear infinite; }
+@keyframes fly { 25% { transform: translate(12px,-7px); } 50% { transform: translate(3px,-14px); } 75% { transform: translate(-9px,-5px); } }
+.grain { position: absolute; width: 8px; height: 11px; border-radius: 50%; background: var(--yellow); border: 2px solid var(--ink); animation: drop .7s ease-in forwards; }
+@keyframes drop { from { transform: translateY(-56px); } to { transform: translateY(0); opacity: 0; } }
+.float { position: absolute; pointer-events: none; animation: rise 1.3s ease-out forwards; }
+@keyframes rise { from { transform: scale(.6); opacity: 1; } to { transform: translateY(-40px) scale(1.1); opacity: 0; } }
+.mood { font: 600 12.5px var(--hand); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; min-height: 16px; }
+.mood b { font-family: var(--display); font-weight: 900; }
+.acts { display: flex; gap: 6px; justify-content: center; margin-top: 4px; }
+.act { width: 38px; height: 38px; border-radius: 50%; border: 2.5px solid var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; position: relative; background: var(--paper); transition: opacity .3s; }
+.act svg { width: 18px; height: 18px; }
+.act.sleep { background: var(--ink); }
+.asleep .act:not(.sleep) { opacity: .45; }
+.need { position: absolute; top: -4px; right: -4px; width: 13px; height: 13px; border-radius: 50%; background: var(--pink); border: 2.5px solid var(--ink); }
+
+/* мойка */
+.wash-s { align-items: center; padding: 32px 10px 8px; background: var(--cyan); }
+.scrub { position: relative; flex: 1; width: 100%; display: grid; place-items: center; touch-action: none; cursor: grab; min-height: 0; }
+.scrub .chick { width: 96px; }
+.bubble { position: absolute; border-radius: 50%; border: 2px solid var(--ink); background: rgba(255,255,255,.6); pointer-events: none; animation: bub 1.2s ease-out forwards; }
+@keyframes bub { to { transform: translateY(-30px) scale(1.3); opacity: 0; } }
+.meter { width: 78%; height: 9px; border-radius: 99px; border: 2px solid var(--ink); background: var(--paper); overflow: hidden; margin: 2px 0 6px; }
+.meter span { display: block; height: 100%; background: var(--ink); transition: width .2s; }
+
+/* игры */
+.games-s { gap: 7px; padding: 34px 10px 10px; }
+.tile { flex: 1; border: 2.5px solid var(--ink); border-radius: 20px; text-align: left; padding: 10px 12px; cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; }
+.tile b { font: 900 15px var(--display); letter-spacing: -.02em; }
+.tile small { font: 600 10.5px/1.25 var(--hand); }
+.tile.g1 { background: var(--lime); }
+.tile.g2 { background: var(--pink); }
+.catch-s { padding: 30px 8px 8px; background: var(--lime); }
+.hud { display: flex; justify-content: space-between; font: 800 12px var(--display); padding: 0 8px; font-variant-numeric: tabular-nums; }
+.arena { position: relative; flex: 1; }
+.target { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 3px solid var(--ink); padding: 0; cursor: pointer; background: var(--yellow); animation: pop .22s ease both; }
+.target.worm { background: var(--pink); border-radius: 40% 60% 55% 45%; }
+.target.got { animation: got .22s ease forwards; }
+@keyframes got { to { transform: scale(1.6); opacity: 0; } }
+.end { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; padding: 0 14px; z-index: 8; background: rgba(243,242,239,.92); animation: tin .25s ease both; }
+.end b { font: 900 34px var(--display); }
+.end small { font: 600 11.5px var(--hand); }
+.end .row { display: flex; gap: 6px; width: 100%; }
+.end .row .btn { flex: 1; }
+.flap-s { padding: 30px 6px 6px; }
+.flapbox { position: relative; flex: 1; border-radius: 18px; overflow: hidden; border: 2.5px solid var(--ink); }
+.flapbox canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: pointer; }
+.fscore { position: absolute; top: 4px; left: 0; right: 0; text-align: center; font: 900 22px var(--display); pointer-events: none; }
+.ftip { position: absolute; left: 10px; right: 10px; bottom: 22px; text-align: center; font: 700 11.5px var(--hand); background: var(--paper); border: 2px solid var(--ink); border-radius: 12px; padding: 5px; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+</style>
+</head>
+<body>
+<div id="w"></div>
+<script>
+(function () {
+  "use strict";
+  var uid = 0;
+  var INK = "#151515", PAPER = "#F3F2EF";
+__BIRD__
+__LOOKS__
+  var NAMES = { flamingo: ["Фламинго", "Футболка oversize"], pushok: ["Пушок", "Плюшевая цыпа"], petya: ["Петя", "Кружка «Петух»"], ryaba: ["Ряба", "Шоппер из хлопка"], gosha: ["Гоша", "Носки «Лапки»"], nesushka: ["Несушка", "Брелок «Яичко»"], bro: ["Бройлер Бро", "Футболка «птиц»"] };
+  var STATS = ["hunger", "clean", "fun", "energy"];
+  var RATE = { hunger: 6, clean: 4, fun: 5, energy: 3 };
+  var LOW = 35, FEED = 10;
+  var ALERT = { hunger: "проголодался, покормите", clean: "испачкался, пора мыться", fun: "скучает, поиграйте с ним", energy: "устал, уложите спать" };
+  var ICON = {
+    hunger: '<svg viewBox="0 0 24 24" fill="#151515"><ellipse cx="8" cy="9" rx="3" ry="4.5" transform="rotate(-20 8 9)"/><ellipse cx="16" cy="9" rx="3" ry="4.5" transform="rotate(20 16 9)"/><ellipse cx="12" cy="17" rx="3" ry="4.5"/></svg>',
+    clean: '<svg viewBox="0 0 24 24" fill="#151515"><path d="M12 2s7 8 7 13a7 7 0 0 1-14 0c0-5 7-13 7-13z"/></svg>',
+    fun: '<svg viewBox="0 0 24 24" fill="#151515"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.4 3.2 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.8 0 5.9 3.9 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg>',
+    energy: '<svg viewBox="0 0 24 24" fill="#151515"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',
+    feed: '<svg viewBox="0 0 24 24" fill="#151515"><ellipse cx="8" cy="9" rx="3" ry="4.5" transform="rotate(-20 8 9)"/><ellipse cx="16" cy="9" rx="3" ry="4.5" transform="rotate(20 16 9)"/><ellipse cx="12" cy="17" rx="3" ry="4.5"/></svg>',
+    wash: '<svg viewBox="0 0 24 24" fill="#151515"><path d="M12 2s7 8 7 13a7 7 0 0 1-14 0c0-5 7-13 7-13z"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="#151515"><path d="M7 7h10a5 5 0 0 1 4.6 7l-1 2.3a2.5 2.5 0 0 1-4.3.4L15 15H9l-1.3 1.7a2.5 2.5 0 0 1-4.3-.4l-1-2.3A5 5 0 0 1 7 7zm1 3v1.5H6.5v1H8V14h1v-1.5h1.5v-1H9V10zm7.5.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm2 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" fill="#fff"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>',
+    sun: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4.5" fill="#fff"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>',
+    back: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>',
+    leaf: '<svg width="13" height="13" viewBox="0 0 24 24" fill="#151515"><path d="M20 4c-9 0-15 4-15 11 0 1.3.3 2.6.8 3.6L3 21.4 4.4 23l2.9-2.8c1 .5 2.2.8 3.6.8C18 21 20 13 20 4z"/></svg>'
+  };
+  var EGG = '<svg viewBox="0 0 80 100" aria-hidden="true"><ellipse cx="40" cy="56" rx="31" ry="39" fill="#fff" stroke="#151515" stroke-width="5"/><path d="M24 44 q3 -11 11 -15" stroke="#151515" stroke-width="4" fill="none" stroke-linecap="round"/></svg>';
+  var FIELD = { flamingo: "#FF7FB6", pushok: "#FFD60A", petya: "#FF8A2A", ryaba: "#C8F23C", gosha: "#A99BFF", nesushka: "#36C8FF", bro: "#FF6A5C" };
+
+  var W = document.getElementById("w");
+  var screen = "egg", timers = [];
+  function h(s) { var d = document.createElement("div"); d.innerHTML = s.trim(); return d.firstElementChild; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function clamp(v) { return Math.max(0, Math.min(100, v)); }
+  function plural(n, a, b, c) { var n10 = n % 10, n100 = n % 100; return n10 === 1 && n100 !== 11 ? a : n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14) ? b : c; }
+
+  // ---------- общее с телефоном хранилище ----------
+  var SHARED = "ptichki-v1", OWN = "ptichki-watch-v1";
+  var mem = { shared: null, own: null };
+  function readShared() { try { return JSON.parse(localStorage.getItem(SHARED) || "null"); } catch (e) { return mem.shared; } }
+  function writeShared(d) { mem.shared = d; try { localStorage.setItem(SHARED, JSON.stringify(d)); } catch (e) {} }
+  var own = (function () { try { return JSON.parse(localStorage.getItem(OWN) || "null"); } catch (e) { return null; } })() || { grains: 40, flapBest: 0, seenBorn: null };
+  function saveOwn() { try { localStorage.setItem(OWN, JSON.stringify(own)); } catch (e) {} }
+  function pet() { var d = readShared(); return d && d.pet ? d.pet : null; }
+  function setPet(p) { var d = readShared() || {}; d.pet = p; writeShared(d); }
+  function name(p) { return (NAMES[p.id] || [p.name])[0]; }
+
+  function moodOf(p) {
+    if (p.sleeping) return { key: "sleep", text: "спит" };
+    var low = STATS.slice().sort(function (a, b) { return p[a] - p[b]; })[0];
+    if (p[low] >= 65) return { key: "happy", text: "счастлив" };
+    if (p[low] >= 40) return { key: "ok", text: "всё хорошо" };
+    return { hunger: { key: "hungry", text: "проголодался" }, clean: { key: "dirty", text: "испачкался" }, fun: { key: "bored", text: "скучает" }, energy: { key: "tired", text: "устал, хочет спать" } }[low];
+  }
+  function chickSVG(p, key) {
+    var eyes = { happy: "happy", ok: null, hungry: "sad", dirty: null, bored: "bored", tired: "bored", sleep: "sleep" }[key];
+    var dirt = p.clean < 55 ? (0.25 + 0.75 * (1 - p.clean / 55)).toFixed(2) : 0;
+    return bird(Object.assign({}, LOOKS[p.id] || {}, { mood: eyes, dirt: dirt }));
+  }
+
+  // время идёт: голод, грязь, скука, усталость; во сне медленнее, а энергия растёт
+  function tick() {
+    var p = pet(); if (!p) return;
+    var hrs = (Date.now() - (p.t || Date.now())) / 3600000;
+    if (hrs <= 0) return;
+    var before = {}; STATS.forEach(function (s) { before[s] = p[s]; });
+    STATS.forEach(function (s) {
+      if (s === "energy" && p.sleeping) p.energy = clamp(p.energy + 25 * hrs);
+      else p[s] = clamp(p[s] - RATE[s] * hrs * (p.sleeping ? 0.35 : 1));
+    });
+    if (p.sleeping && p.energy >= 100) { p.sleeping = false; toast(name(p) + " выспался и бодр", true); }
+    p.t = Date.now();
+    if (!p.sleeping) for (var i = 0; i < STATS.length; i++) {
+      var s = STATS[i];
+      if (before[s] >= LOW && p[s] < LOW) { toast(name(p) + " " + ALERT[s], true); break; }
+    }
+    setPet(p);
+  }
+
+  // ---------- навигация ----------
+  function clock() { var d = new Date(); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); }
+  function topbar(back, title, wallet) {
+    return '<div class="top">' + (back ? '<button class="backbtn" type="button" data-back aria-label="Назад">' + ICON.back + '</button>' : wallet ? '<span class="wallet">' + ICON.leaf + '<span id="gr">' + own.grains + '</span></span>' : '<span></span>') +
+      '<span style="display:flex;gap:8px;align-items:baseline">' + (title ? '<span class="title">' + title + '</span>' : '') + '<span class="time">' + clock() + '</span></span></div>';
+  }
+  function stop() { timers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); timers = []; }
+  function show(id, back) {
+    stop();
+    screen = id;
+    W.innerHTML = "";
+    var el = S[id]();
+    if (back) el.classList.add("back-in");
+    W.appendChild(el);
+    var b = el.querySelector("[data-back]");
+    if (b) b.addEventListener("click", function () { show(id === "catch" || id === "flap" ? "games" : (id === "pick" ? "egg" : "pet"), true); });
+  }
+  function toast(text, buzz) {
+    var old = W.querySelector(".toast"); if (old) old.remove();
+    var t = h('<div class="toast">' + esc(text) + '</div>');
+    (W.firstElementChild || W).appendChild(t);
+    setTimeout(function () { t.remove(); }, 2600);
+    if (buzz && W.firstElementChild) { var s = W.firstElementChild; s.classList.remove("buzz"); void s.offsetWidth; s.classList.add("buzz"); }
+  }
+  function floatUp(host, html, x, y) { var f = h('<span class="float" style="left:' + x + 'px;top:' + y + 'px">' + html + '</span>'); host.appendChild(f); setTimeout(function () { f.remove(); }, 1300); }
+
+  var S = {
+    egg: function () {
+      var el = h('<section class="ws egg-s">' + topbar(false, "", false) + '<div class="egg">' + EGG + '</div><b>тут будет цыпа</b><p>Купите мерч на iPhone, и из него вылупится цыпа</p><button class="btn sky" type="button" id="pickBtn">Вылупить цыпу</button></section>');
+      el.querySelector("#pickBtn").addEventListener("click", function () { show("pick"); });
+      return el;
+    },
+    pick: function () {
+      var el = h('<section class="ws">' + topbar(true, "Что купили?") + '<div class="list">' + Object.keys(NAMES).map(function (id) {
+        return '<button class="pick" type="button" data-id="' + id + '"><span class="ic" style="background:' + FIELD[id] + '">' + bird(Object.assign({}, LOOKS[id], { mood: "happy" })) + '</span><span><b>' + NAMES[id][0] + '</b><small>' + NAMES[id][1] + '</small></span></button>';
+      }).join("") + '</div></section>');
+      el.querySelector(".list").addEventListener("click", function (e) {
+        var b = e.target.closest("[data-id]"); if (!b) return;
+        var now = Date.now();
+        setPet({ id: b.dataset.id, name: NAMES[b.dataset.id][0], hunger: 70, clean: 85, fun: 60, energy: 80, sleeping: false, born: now, t: now });
+        own.seenBorn = now; saveOwn();
+        show("hatch");
+      });
+      return el;
+    },
+    hatch: function () {
+      var p = pet();
+      var el = h('<section class="ws hatch" style="background:' + (FIELD[p.id] || "#FFD60A") + '"><div class="shell">' + EGG + '</div><div class="born"><div class="chick">' + chickSVG(p, "happy") + '</div><b>привет, я ' + esc(name(p).toLowerCase()) + '!</b><button class="btn sky" type="button" id="hi">Привет!</button></div></section>');
+      el.querySelector("#hi").addEventListener("click", function () { show("pet"); });
+      return el;
+    },
+    pet: function () {
+      var el = h('<section class="ws pet-s" style="background:' + (FIELD[pet().id] || "#FFD60A") + '">' + topbar(false, "", true) +
+        '<div class="bars">' + STATS.map(function (s) { return '<div class="bar" data-s="' + s + '">' + ICON[s] + '<i><span style="background:var(--' + s + ')"></span></i></div>'; }).join("") + '</div>' +
+        '<div class="stage"><div class="chick" role="button" aria-label="Погладить цыпу"></div></div>' +
+        '<div class="mood"></div>' +
+        '<div class="acts"><button class="act feed" type="button" aria-label="Покормить"></button><button class="act wash" type="button" aria-label="Помыть"></button><button class="act play" type="button" aria-label="Поиграть"></button><button class="act sleep" type="button"></button></div></section>');
+      function awake(fn) { return function () { var p = pet(); if (p.sleeping) { toast("Тсс, " + name(p) + " спит. Сначала разбудите"); return; } fn(p); }; }
+      el.querySelector(".act.feed").addEventListener("click", feed);
+      el.querySelector(".act.wash").addEventListener("click", awake(function (p) { if (p.clean >= 95) toast(name(p) + " и так чистый"); else show("wash"); }));
+      el.querySelector(".act.play").addEventListener("click", awake(function (p) { if (p.energy < 15) toast(name(p) + " слишком устал для игр. Уложите спать"); else show("games"); }));
+      el.querySelector(".act.sleep").addEventListener("click", function () {
+        var p = pet();
+        if (!p.sleeping && p.energy >= 90) { toast(name(p) + " полон сил и не хочет спать"); return; }
+        p.sleeping = !p.sleeping;
+        if (!p.sleeping) p.fun = clamp(p.fun - 8);
+        setPet(p); refresh(true);
+        toast(p.sleeping ? "Спокойной ночи, " + name(p) : name(p) + " проснулся и немного ворчит");
+      });
+      var ch = el.querySelector(".chick");
+      ch.addEventListener("click", function () {
+        var p = pet(); if (p.sleeping) return;
+        ch.classList.remove("idle", "slow", "boing"); void ch.offsetWidth; ch.classList.add("boing");
+        floatUp(el.querySelector(".stage"), '<svg width="16" height="16" viewBox="0 0 24 24">' + ICON.fun.replace(/<\/?svg[^>]*>/g, "").replace('<path','<path fill="#FF3D8B" stroke="#151515" stroke-width="2"') + '</svg>', 120, 20);
+        timers.push(setTimeout(function () { refresh(true); }, 620));
+      });
+      timers.push(setInterval(function () { tick(); refresh(); var t = el.querySelector(".time"); if (t) t.textContent = clock(); }, 15000));
+      setTimeout(function () { refresh(true); }, 0);
+      return el;
+    },
+    wash: function () {
+      var p = pet();
+      var el = h('<section class="ws wash-s">' + topbar(true, "Мойка") + '<div class="scrub"><div class="chick"></div></div><div class="meter"><span></span></div><button class="btn" type="button" id="rub">Потереть</button></section>');
+      var scrub = el.querySelector(".scrub"), ch = scrub.querySelector(".chick"), meter = el.querySelector(".meter span");
+      var last = 0, done = false, down = false;
+      function draw() { ch.innerHTML = chickSVG(p, p.clean > 80 ? "happy" : "ok"); meter.style.width = p.clean + "%"; }
+      function rub(x, y, amt) {
+        if (done) return;
+        p.clean = clamp(p.clean + amt);
+        var s = 8 + Math.random() * 14, b = h('<span class="bubble" style="width:' + s + 'px;height:' + s + 'px;left:' + (x - s / 2) + 'px;top:' + (y - s / 2) + 'px"></span>');
+        scrub.appendChild(b); setTimeout(function () { b.remove(); }, 1200);
+        draw();
+        if (p.clean >= 100) {
+          done = true; p.t = Date.now(); setPet(p);
+          floatUp(scrub, '<svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF" stroke="#151515" stroke-width="1.5"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5L5.7 21 8 13.8 2 9.2h7.6z"/></svg>', 120, 20);
+          setTimeout(function () { show("pet", true); toast(name(p) + " сияет! Чистюля"); }, 900);
+        }
+      }
+      scrub.addEventListener("pointerdown", function (e) { down = true; scrub.setPointerCapture(e.pointerId); });
+      scrub.addEventListener("pointerup", function () { down = false; setPet(Object.assign(pet(), { clean: p.clean })); });
+      scrub.addEventListener("pointermove", function (e) {
+        if (!down) return; var n = Date.now(); if (n - last < 35) return; last = n;
+        var r = scrub.getBoundingClientRect(); rub(e.clientX - r.left, e.clientY - r.top, 2.2);
+      });
+      el.querySelector("#rub").addEventListener("click", function () { for (var i = 0; i < 5; i++) rub(40 + Math.random() * 100, 20 + Math.random() * 90, 4); if (!done) setPet(Object.assign(pet(), { clean: p.clean })); });
+      draw();
+      return el;
+    },
+    games: function () {
+      var el = h('<section class="ws games-s">' + topbar(true, "Игры") +
+        '<button class="tile g1" type="button" id="g1"><b>лови зёрна</b><small>Тапайте зёрна и червяков. Пойманные зёрна — в копилку</small></button>' +
+        '<button class="tile g2" type="button" id="g2"><b>над забором</b><small>Тап — взмах крыльями' + (own.flapBest ? ' · рекорд ' + own.flapBest : '') + '</small></button></section>');
+      el.querySelector("#g1").addEventListener("click", function () { show("catch"); });
+      el.querySelector("#g2").addEventListener("click", function () { show("flap"); });
+      return el;
+    },
+    catch: function () {
+      var el = h('<section class="ws catch-s">' + topbar(true, "Лови зёрна") + '<div class="hud"><span id="sc">0 очков</span><span id="tm">10 с</span></div><div class="arena"></div></section>');
+      var arena = el.querySelector(".arena"), sc = el.querySelector("#sc"), tm = el.querySelector("#tm");
+      var score = 0, caught = 0, left = 10, over = false;
+      function spawn() {
+        var worm = Math.random() < 0.2;
+        var t = h('<button class="target' + (worm ? ' worm' : '') + '" type="button" aria-label="' + (worm ? 'Червяк' : 'Зерно') + '" style="left:' + (14 + Math.random() * 72) + '%;top:' + (14 + Math.random() * 72) + '%"></button>');
+        t.addEventListener("pointerdown", function (e) {
+          e.preventDefault(); if (over || t.classList.contains("got")) return;
+          t.classList.add("got"); score += worm ? 3 : 1; if (!worm) caught++;
+          sc.textContent = score + " " + plural(score, "очко", "очка", "очков");
+          setTimeout(function () { t.remove(); }, 220);
+        });
+        arena.appendChild(t);
+        timers.push(setTimeout(function () { if (!t.classList.contains("got")) t.remove(); }, worm ? 800 : 1100));
+      }
+      function end() {
+        over = true; stop(); arena.innerHTML = "";
+        var gain = Math.min(60, score * 5), p = pet();
+        p.fun = clamp(p.fun + gain); p.energy = clamp(p.energy - 8); setPet(p);
+        own.grains += caught; saveOwn();
+        var o = h('<div class="end"><b>' + score + '</b><small>+' + gain + ' радости · +' + caught + ' ' + plural(caught, "зерно", "зерна", "зёрен") + '</small><div class="row"><button class="btn" type="button" id="again">Ещё</button><button class="btn yolk" type="button" id="ok">Готово</button></div></div>');
+        el.appendChild(o);
+        o.querySelector("#again").addEventListener("click", function () { show("catch"); });
+        o.querySelector("#ok").addEventListener("click", function () { show("pet", true); });
+      }
+      setTimeout(function () {
+        if (screen !== "catch") return;
+        spawn();
+        timers.push(setInterval(spawn, 620));
+        timers.push(setInterval(function () { left--; tm.textContent = left + " с"; if (left <= 0) end(); }, 1000));
+      }, 300);
+      return el;
+    },
+    flap: function () {
+      var p = pet(), look = Object.assign({ accent: "#FF3D8B", comb: true }, LOOKS[p.id] || {});
+      var el = h('<section class="ws flap-s">' + topbar(true, "Над забором") + '<div class="flapbox"><canvas></canvas><div class="fscore">0</div><div class="ftip">Тапните, чтобы взлететь</div></div></section>');
+      var box = el.querySelector(".flapbox"), cv = el.querySelector("canvas"), ctx = cv.getContext("2d"), hud = el.querySelector(".fscore"), tip = el.querySelector(".ftip");
+      var Wd = 0, H = 0, GROUND = 14, PW = 24, g = null;
+      function gap() { return Math.max(64, H * 0.36); }
+      function reset() {
+        g = { mode: "ready", y: H / 2 - 10, vy: 0, t: 0, score: 0, posts: [], flapT: 0, last: 0 };
+        addPost(Wd + 30); addPost(Wd + 134);
+      }
+      function addPost(x) { g.posts.push({ x: x, gapY: 30 + Math.random() * Math.max(4, H - GROUND - gap() - 56), passed: false }); }
+      function flap() { if (!g || g.mode === "over") return; if (g.mode === "ready") { g.mode = "play"; tip.hidden = true; } g.vy = -4.3; g.flapT = 8; }
+      cv.addEventListener("pointerdown", function (e) { e.preventDefault(); flap(); });
+      function frame(now) {
+        if (screen !== "flap" || !document.body.contains(cv)) return;
+        var dt = g.last ? Math.min(50, now - g.last) : 16; g.last = now;
+        var f = dt / 16.67; g.t += dt / 1000;
+        if (g.mode === "play") {
+          g.vy += 0.27 * f; g.y += g.vy * f;
+          g.posts.forEach(function (q) { q.x -= 1.7 * f; if (!q.passed && q.x + PW < 44) { q.passed = true; g.score++; hud.textContent = g.score; } });
+          if (g.posts[0].x < -PW - 6) { g.posts.shift(); addPost(g.posts[g.posts.length - 1].x + 104); }
+          var hit = g.y > H - GROUND - 9 || g.y < 9;
+          g.posts.forEach(function (q) { if (53 > q.x - 3 && 35 < q.x + PW + 3 && (g.y - 9 < q.gapY || g.y + 9 > q.gapY + gap())) hit = true; });
+          if (hit) { over(); }
+        } else if (g.mode === "ready") g.y = H / 2 - 10 + Math.sin(g.t * 6) * 5;
+        if (g.flapT > 0) g.flapT -= f;
+        draw();
+        if (g.mode !== "over") requestAnimationFrame(frame);
+      }
+      function draw() {
+        ctx.fillStyle = "#36C8FF"; ctx.fillRect(0, 0, Wd, H);
+        ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#151515"; ctx.lineWidth = 2.5;
+        var cx = (g.t * 18) % (Wd + 60);
+        ctx.beginPath(); ctx.ellipse(Wd - cx + 30, 40, 22, 9, 0, 0, 7); ctx.fill(); ctx.stroke();
+        g.posts.forEach(function (q) {
+          var top = q.gapY, bot = q.gapY + gap();
+          ctx.fillStyle = "#FFD60A"; ctx.fillRect(q.x, 0, PW, top); ctx.fillRect(q.x, bot, PW, H - GROUND - bot); ctx.strokeRect(q.x, -3, PW, top + 3); ctx.strokeRect(q.x, bot, PW, H - GROUND - bot);
+          ctx.fillStyle = "#151515"; ctx.fillRect(q.x - 3, top - 8, PW + 6, 8); ctx.fillRect(q.x - 3, bot, PW + 6, 8);
+        });
+        ctx.fillStyle = "#C8F23C"; ctx.fillRect(0, H - GROUND, Wd, GROUND); ctx.fillStyle = "#151515"; ctx.fillRect(0, H - GROUND, Wd, 2.5);
+        ctx.save(); ctx.translate(44, g.y); ctx.rotate(Math.max(-0.5, Math.min(1.1, g.vy / 7)));
+        ctx.fillStyle = "#151515"; ctx.beginPath(); ctx.arc(0, 0, 10, 0, 7); ctx.fill();
+        if (look.comb !== false) { ctx.fillStyle = look.accent; ctx.beginPath(); ctx.arc(1, -10, 3.2, 0, 7); ctx.arc(5, -9, 3, 0, 7); ctx.fill(); }
+        ctx.fillStyle = "#FF8A2A"; ctx.beginPath(); ctx.moveTo(9, -2); ctx.lineTo(16, 1); ctx.lineTo(9, 4); ctx.fill();
+        ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(4.5, -3, 4, 0, 7); ctx.fill(); ctx.fillStyle = "#151515"; ctx.beginPath(); ctx.arc(5.5, -3, 1.8, 0, 7); ctx.fill();
+        ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(-3, g.flapT > 0 ? -4 : 3, 6.5, 3.6, g.flapT > 0 ? -0.6 : 0.3, 0, 7); ctx.stroke();
+        ctx.restore();
+      }
+      function over() {
+        g.mode = "over";
+        var gain = Math.min(60, 6 + g.score * 8), q = pet();
+        q.fun = clamp(q.fun + gain); q.energy = clamp(q.energy - 10); setPet(q);
+        var rec = g.score > (own.flapBest || 0) && g.score > 0; if (rec) { own.flapBest = g.score; saveOwn(); }
+        var o = h('<div class="end"><b>' + g.score + '</b><small>' + (rec ? 'Новый рекорд! ' : '') + '+' + gain + ' радости</small><div class="row"><button class="btn" type="button" id="again">Ещё</button><button class="btn yolk" type="button" id="ok">Готово</button></div></div>');
+        el.appendChild(o);
+        o.querySelector("#again").addEventListener("click", function () { show("flap"); });
+        o.querySelector("#ok").addEventListener("click", function () { show("pet", true); });
+      }
+      setTimeout(function () {
+        Wd = box.clientWidth; H = box.clientHeight;
+        cv.width = Wd * 2; cv.height = H * 2; ctx.scale(2, 2);
+        reset(); draw(); requestAnimationFrame(frame);
+      }, 30);
+      return el;
+    }
+  };
+
+  function feed() {
+    var p = pet(), el = W.querySelector(".pet-s"); if (!p || !el) return;
+    if (p.sleeping) { toast("Тсс, " + name(p) + " спит"); return; }
+    if (p.hunger >= 92) { toast(name(p) + " сыт и отворачивается"); return; }
+    if (own.grains < FEED) { toast("Нужно " + FEED + " зёрен. Поймайте их в игре"); return; }
+    own.grains -= FEED; saveOwn();
+    p.hunger = clamp(p.hunger + 32); setPet(p);
+    var st = el.querySelector(".stage"), ch = el.querySelector(".chick");
+    [-18, 0, 18].forEach(function (dx, i) { setTimeout(function () { var g = h('<span class="grain" style="left:calc(50% + ' + dx + 'px);top:36%"></span>'); st.appendChild(g); setTimeout(function () { g.remove(); }, 700); }, i * 150); });
+    ch.innerHTML = chickSVG(p, "happy"); ch.className = "chick eat";
+    timers.push(setTimeout(function () { refresh(true); floatUp(st, '<svg width="16" height="16" viewBox="0 0 24 24">' + ICON.fun.replace(/<\/?svg[^>]*>/g, "").replace('<path','<path fill="#FF3D8B" stroke="#151515" stroke-width="2"') + '</svg>', 120, 20); }, 1500));
+    var gr = el.querySelector("#gr"); if (gr) gr.textContent = own.grains;
+  }
+
+  // перерисовать экран питомца по текущему состоянию
+  function refresh(force) {
+    var el = W.querySelector(".pet-s"), p = pet(); if (!el || !p) return;
+    el.classList.toggle("asleep", !!p.sleeping);
+    STATS.forEach(function (s) {
+      var b = el.querySelector('[data-s="' + s + '"]');
+      b.classList.toggle("low", p[s] < LOW && !p.sleeping);
+      b.querySelector("i span").style.width = Math.round(p[s]) + "%";
+    });
+    var gr = el.querySelector("#gr"); if (gr) gr.textContent = own.grains;
+    var m = moodOf(p);
+    el.querySelector(".mood").innerHTML = "<b>" + esc(name(p)) + "</b> " + m.text;
+    var ch = el.querySelector(".chick"), sig = m.key + "|" + (p.clean < 55 ? Math.round(p.clean / 10) : "c");
+    if (force || ch.dataset.sig !== sig) {
+      ch.dataset.sig = sig;
+      ch.innerHTML = chickSVG(p, m.key);
+      ch.className = "chick " + (m.key === "sleep" ? "breathe" : (m.key === "hungry" || m.key === "bored" || m.key === "tired") ? "slow" : "idle");
+      var st = el.querySelector(".stage");
+      st.querySelectorAll(".zz, .dots, .fly").forEach(function (n) { n.remove(); });
+      if (m.key === "sleep") st.insertAdjacentHTML("beforeend", '<span class="zz">z</span><span class="zz" style="animation-delay:-.8s">z</span><span class="zz" style="animation-delay:-1.6s">Z</span>');
+      if (m.key === "bored") st.insertAdjacentHTML("beforeend", '<span class="dots">…</span>');
+      if (m.key === "dirty") st.insertAdjacentHTML("beforeend", '<span class="fly" style="left:38%;top:20%"></span><span class="fly" style="left:62%;top:34%;animation-delay:-.6s"></span>');
+    }
+    function need(v) { return v < LOW ? '<span class="need"></span>' : ''; }
+    el.querySelector(".act.feed").innerHTML = ICON.feed + need(p.hunger);
+    el.querySelector(".act.wash").innerHTML = ICON.wash + need(p.clean);
+    el.querySelector(".act.play").innerHTML = ICON.play + need(p.fun);
+    var sl = el.querySelector(".act.sleep");
+    sl.innerHTML = (p.sleeping ? ICON.sun : ICON.moon + need(p.energy));
+    sl.setAttribute("aria-label", p.sleeping ? "Разбудить" : "Уложить спать");
+  }
+
+  // покупка на телефоне: если появилась новая цыпа, она вылупляется на часах
+  function sync() {
+    var p = pet();
+    if (!p) { if (screen !== "egg" && screen !== "pick") show("egg", true); return; }
+    if (own.seenBorn !== p.born) { own.seenBorn = p.born; saveOwn(); show("hatch"); return; }
+    if (screen === "egg" || screen === "pick") show("pet");
+    else if (screen === "pet") refresh();
+  }
+  window.addEventListener("storage", function (e) { if (e.key === SHARED || e.key === null) sync(); });
+  // колёсико Digital Crown на рамке: домой, к цыпе
+  window.addEventListener("message", function (e) {
+    if (e.data !== "crown") return;
+    var p = pet();
+    if (screen === "hatch") return;
+    show(p ? "pet" : "egg", true);
+  });
+  setInterval(function () { if (screen === "egg") sync(); }, 2000);
+
+  tick();
+  var first = pet();
+  if (!first) show("egg");
+  else if (own.seenBorn !== first.born) { own.seenBorn = first.born; saveOwn(); show("hatch"); }
+  else show("pet");
+})();
+</script>
+</body>
+</html>

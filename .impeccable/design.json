@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-17T12:00:00Z",
+  "title": "Design System: Птички",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "primary", "displayName": "Чернила", "canonical": "#151515" },
+      "hot-pink": { "role": "secondary", "displayName": "Горячий розовый", "canonical": "#FF3D8B" },
+      "bubblegum": { "role": "tertiary", "displayName": "Жевательная резинка", "canonical": "#FF7FB6" },
+      "sun-yellow": { "role": "tertiary", "displayName": "Солнечный жёлтый", "canonical": "#FFD60A" },
+      "tangerine": { "role": "tertiary", "displayName": "Мандарин", "canonical": "#FF8A2A" },
+      "acid-lime": { "role": "tertiary", "displayName": "Кислотный лайм", "canonical": "#C8F23C" },
+      "lilac": { "role": "tertiary", "displayName": "Сирень", "canonical": "#A99BFF" },
+      "cyan": { "role": "tertiary", "displayName": "Циан", "canonical": "#36C8FF" },
+      "coral": { "role": "tertiary", "displayName": "Коралл", "canonical": "#FF6A5C" },
+      "ground": { "role": "neutral", "displayName": "Тёплая земля", "canonical": "#F3F2EF" },
+      "paper": { "role": "neutral", "displayName": "Бумага", "canonical": "#FFFFFF" },
+      "ink-soft": { "role": "neutral", "displayName": "Мягкие чернила", "canonical": "#4A4744" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Словесный знак и «мэтч!»." },
+      "headline": { "displayName": "Headline", "purpose": "Имя персонажа на товаре, заголовки экранов." },
+      "title": { "displayName": "Title", "purpose": "Имя на карточке колоды, шапка." },
+      "body": { "displayName": "Body", "purpose": "Описания и подтверждения." },
+      "hand": { "displayName": "Hand", "purpose": "Реплики цып, подписи полей, подсказки." },
+      "label": { "displayName": "Label", "purpose": "Плашки, таб-бар, мелкие подписи." }
+    },
+    "shadows": [
+      { "name": "ground-shadow", "value": "ellipse fill #151515 at 14% opacity under the character", "purpose": "Единственная тень: под ногами персонажа." }
+    ],
+    "motion": [
+      { "name": "spring", "value": "cubic-bezier(.2, 1.5, .35, 1)", "purpose": "Нажатия, появление облачка, плашек, вкладок." },
+      { "name": "out", "value": "cubic-bezier(.2, .8, .2, 1)", "purpose": "Переходы между экранами, раскрытие описания." },
+      { "name": "flood", "value": "clip-path circle from the card centre, .45s cubic-bezier(.6,0,.3,1)", "purpose": "Фирменное движение: лайк заливает экран цветом цыпы." }
+    ],
+    "breakpoints": [
+      { "name": "app-column", "value": "480px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Главное действие экрана: купить, начать, к цыпе.",
+      "html": "<button class=\"ds-pill\">Купить за 99 ₽</button>",
+      "css": ".ds-pill { background: #151515; color: #fff; border: none; border-radius: 999px; padding: 17px 26px; font: 800 17px Rubik, system-ui, sans-serif; letter-spacing: -.01em; transition: transform .35s cubic-bezier(.2,1.5,.35,1); } .ds-pill:active { transform: scale(.92); }"
+    },
+    {
+      "name": "Speech Bubble",
+      "kind": "custom",
+      "refersTo": "speech-bubble",
+      "description": "Реплика персонажа над ним.",
+      "html": "<p class=\"ds-bubble\">Обнимешь — не отпущу. Я плюшевый!</p>",
+      "css": ".ds-bubble { position: relative; display: inline-block; margin: 0; background: #fff; border: 3px solid #151515; border-radius: 22px; padding: 10px 16px; font: 700 16px/1.3 'Shantell Sans', cursive; color: #151515; } .ds-bubble::after { content: ''; position: absolute; left: 50%; bottom: -11px; width: 16px; height: 16px; background: #fff; border-right: 3px solid #151515; border-bottom: 3px solid #151515; transform: translateX(-50%) rotate(45deg); }"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Плашка свойства товара; выбранная — чернильная.",
+      "html": "<span class=\"ds-chip\">oversize</span> <span class=\"ds-chip on\">−90% после мэтча</span>",
+      "css": ".ds-chip { display: inline-block; background: #fff; border: 2.5px solid #151515; border-radius: 999px; padding: 6px 12px; font: 600 13.5px Rubik, sans-serif; color: #151515; } .ds-chip.on { background: #151515; color: #fff; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Наклейки на заборе птичника",
+    "overview": "Каждый товар — чернильная цыпа с огромным белым глазом на сплошном дофаминовом поле своего цвета; интерфейс вокруг — светлая земля, толстые контуры, пилюли и рисованные каракули.",
+    "keyCharacteristics": ["Чернильные контуры 2.5–3px", "Одно цветное поле на экран — поле персонажа", "Рукописные реплики цып", "Тёмные кнопки-пилюли"],
+    "rules": [
+      { "name": "The One Field Rule", "body": "Одно цветное поле на экран, и это поле персонажа.", "section": "colors" },
+      { "name": "The Lowercase Wordmark Rule", "body": "Словесный знак и крупные заголовки пишутся строчными.", "section": "typography" },
+      { "name": "The Outline Not Shadow Rule", "body": "Отделять элементы чернильным контуром, не тенью.", "section": "elevation" }
+    ],
+    "dos": ["Do ставить персонажа на поле его цвета", "Do обводить элементы чернилами 2.5–3px", "Do давать цыпам говорить рукописными репликами", "Do заливать экран цветом цыпы при лайке"],
+    "donts": ["Don't использовать градиенты, стекло и объёмные тени", "Don't красить тело персонажа — только гребешок, щёки, клюв, предметы", "Don't заливать цветом интерфейсные элементы, кроме бейджей состояния", "Don't ставить символы и эмодзи вместо иконок"]
+  }
+}

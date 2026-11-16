@@ -1,0 +1,1235 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Птички</title>
+<meta name="description" content="Мерч птицефабрики: свайпайте цыпочек, ловите мэтчи и скидки.">
+<meta name="theme-color" content="#FFD60A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Птички">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&family=Shantell+Sans:wght@500;700&display=swap">
+<style>
+/* Мир: чернильные цыпы на дофаминовых полях. Светлая тёплая земля, чёрные персонажи и кнопки,
+   у каждого товара сплошное поле своего цвета, рисованные каракули, облачка реплик. */
+:root {
+  --ground: #F3F2EF;
+  --paper: #FFFFFF;
+  --ink: #151515;
+  --ink-2: #4A4744;
+  --line: rgba(21,21,21,.12);
+  --pink: #FF3D8B;
+  --bubblegum: #FF7FB6;
+  --yellow: #FFD60A;
+  --tangerine: #FF8A2A;
+  --lime: #C8F23C;
+  --lilac: #A99BFF;
+  --cyan: #36C8FF;
+  --coral: #FF6A5C;
+  --display: "Rubik", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --hand: "Shantell Sans", "Comic Sans MS", "Rubik", cursive;
+  --body: "Rubik", system-ui, -apple-system, sans-serif;
+  --sat: max(env(safe-area-inset-top, 0px), 18px);
+  --sab: max(env(safe-area-inset-bottom, 0px), 14px);
+  --spring: cubic-bezier(.2, 1.5, .35, 1);
+  --out: cubic-bezier(.2, .8, .2, 1);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
+body { background: var(--ground); color: var(--ink); font-family: var(--body); -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--yellow); color: var(--ink); }
+button { font-family: inherit; color: inherit; }
+input { caret-color: var(--pink); }
+:is(button, input, [role="button"]):focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+.screen-area { position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; overflow: hidden; background: var(--ground); }
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; animation: enter .4s var(--out) both; background: var(--ground); }
+@keyframes enter { from { opacity: 0; transform: translateY(10px); } }
+.tint { color: var(--ink); }
+
+/* рисованные каракули на полях */
+.doodles { position: absolute; inset: 0; pointer-events: none; color: var(--ink); opacity: .9; }
+.doodles .dd { position: absolute; }
+.dd.d1 { width: 70px; top: 18%; left: -10px; transform: rotate(-12deg); }
+.dd.d2 { width: 26px; top: 12%; right: 18%; }
+.dd.d3 { width: 52px; bottom: 26%; right: -6px; transform: rotate(10deg); }
+.dd.d4 { width: 18px; bottom: 34%; left: 12%; }
+.screen:not(.tint):not(.match):not(.splash) > .doodles { display: none; }
+.sticker { position: absolute; z-index: 3; animation: bob 3.2s ease-in-out infinite; }
+.sticker:nth-of-type(2n) { animation-delay: -1.4s; }
+@keyframes bob { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-7px) rotate(var(--r, 0deg)); } }
+
+/* облачко реплики */
+.bubble { position: relative; z-index: 4; margin: 0; background: var(--paper); border: 3px solid var(--ink); border-radius: 22px; padding: 10px 16px; font: 700 16px/1.3 var(--hand); color: var(--ink); max-width: 300px; text-align: center; }
+.bubble::after { content: ""; position: absolute; left: 50%; bottom: -11px; width: 16px; height: 16px; background: var(--paper); border-right: 3px solid var(--ink); border-bottom: 3px solid var(--ink); transform: translateX(-50%) rotate(45deg); border-bottom-right-radius: 4px; }
+.bubble.pop { animation: say-pop .5s var(--spring); }
+@keyframes say-pop { from { transform: scale(.7) rotate(-6deg); opacity: 0; } }
+
+/* кнопки */
+.pill { border: none; border-radius: 999px; padding: 17px 26px; font: 800 17px var(--display); letter-spacing: -.01em; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+.pill-black { background: var(--ink); color: var(--paper); }
+.pill-white { background: var(--paper); color: var(--ink); border: 3px solid var(--ink); padding: 14px 23px; }
+.pill.wide { width: 100%; }
+.pill .arrow { width: 24px; height: 24px; border-radius: 50%; background: var(--yellow); color: var(--ink); display: grid; place-items: center; }
+.pill:disabled { cursor: default; }
+.link { background: none; border: none; color: var(--ink); font: 600 15px var(--body); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; cursor: pointer; padding: 12px; }
+.iconbtn { width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--ink); background: var(--paper); display: grid; place-items: center; cursor: pointer; color: var(--ink); position: relative; flex: none; padding: 0; }
+.dot { position: absolute; top: 6px; right: 7px; width: 11px; height: 11px; border-radius: 50%; background: var(--pink); border: 2.5px solid var(--paper); }
+
+/* заставка */
+.splash { background: var(--yellow); align-items: center; justify-content: center; gap: 0; }
+.splash .hero { width: 210px; position: relative; z-index: 2; }
+.splash .logo { font: 900 68px/1 var(--display); letter-spacing: -.045em; margin-top: 6px; position: relative; z-index: 2; }
+.splash .sub { font: 700 17px var(--hand); margin-top: 8px; position: relative; z-index: 2; }
+.loader { position: absolute; bottom: calc(var(--sab) + 50px); left: 50%; transform: translateX(-50%); width: 44%; height: 14px; border-radius: 99px; border: 3px solid var(--ink); background: var(--paper); overflow: hidden; z-index: 2; }
+.loader i { display: block; height: 100%; width: 0; background: var(--pink); animation: load 1.5s var(--out) forwards; }
+@keyframes load { to { width: 100%; } }
+
+/* регистрация */
+.reg { background: var(--ground); }
+.reg .top { height: 47%; flex: none; display: grid; place-items: end center; position: relative; overflow: hidden; }
+.cutout { position: relative; z-index: 2; display: grid; place-items: end center; }
+.reg .cutout { width: 190px; margin-bottom: 6px; }
+.cutout .art { width: 100%; }
+.cutout .art svg { display: block; width: 100%; height: auto; }
+.reg .sheet { flex: 1; background: var(--ground); position: relative; z-index: 3; padding: 22px 22px calc(var(--sab) + 16px); display: flex; flex-direction: column; gap: 14px; overflow: auto; }
+.big { font: 900 44px/.95 var(--display); letter-spacing: -.04em; margin: 0; text-wrap: balance; }
+.reg .big { text-align: center; }
+.reg p.lead { margin: -4px 0 4px; text-align: center; color: var(--ink-2); font-size: 15px; line-height: 1.45; }
+.field label { font: 700 14px var(--hand); color: var(--ink); padding-left: 6px; }
+.reg .field { display: flex; flex-direction: column; gap: 6px; }
+.reg .field input { border: 3px solid var(--ink); background: var(--paper); border-radius: 18px; padding: 15px 18px; font: 500 17px var(--body); color: var(--ink); outline: none; }
+.reg .field input::placeholder { color: #8D8984; }
+.reg .field input:focus { box-shadow: 0 0 0 4px var(--yellow); }
+.legal { font-size: 12px; color: var(--ink-2); text-align: center; }
+
+/* колода */
+.deck { padding: calc(var(--sat) + 6px) 18px 0; }
+.appbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; animation: drop-in .6s var(--spring) both; }
+.wordmark { display: block; font: 900 34px/1 var(--display); letter-spacing: -.05em; }
+.hi { display: block; font: 600 13px var(--body); color: var(--ink-2); margin-top: 3px; }
+.say { align-self: center; margin: 14px 0 4px; }
+.deck-wrap { position: relative; flex: 1; margin: 16px 6px 0; z-index: 2; min-height: 0; }
+.card { position: absolute; inset: 0; border-radius: 34px; overflow: hidden; border: 3px solid var(--ink); touch-action: none; user-select: none; cursor: grab; display: flex; flex-direction: column; will-change: transform; transition: transform .45s var(--spring); }
+.card:active { cursor: grabbing; }
+.card .art { flex: 1; display: grid; place-items: center; min-height: 0; position: relative; }
+.card .art > svg { width: 70%; max-height: 94%; height: auto; transition: transform .5s var(--spring); }
+.card .info { padding: 0 18px 54px; display: flex; flex-direction: column; gap: 10px; }
+.card .name { font: 900 34px/1 var(--display); letter-spacing: -.04em; margin: 0; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tags span { background: var(--paper); border: 2.5px solid var(--ink); border-radius: 999px; padding: 6px 12px; font: 600 13.5px var(--body); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tags span.hot { background: var(--ink); color: var(--paper); }
+.tags s { color: var(--ink-2); text-decoration-thickness: 2px; }
+.stamp { position: absolute; top: 24px; padding: 6px 16px; border-radius: 14px; border: 3px solid var(--ink); font: 900 26px var(--display); opacity: 0; pointer-events: none; z-index: 2; transition: transform .2s var(--spring); }
+.stamp.like { right: 18px; background: var(--lime); transform: rotate(10deg); }
+.stamp.nope { left: 18px; background: var(--paper); transform: rotate(-10deg); }
+.card.behind { transform: rotate(4deg) translateY(8px) scale(.96); }
+.card.behind2 { transform: rotate(-5deg) translateY(14px) scale(.92); }
+.card.rise { animation: card-rise .5s var(--spring) both; }
+@keyframes card-rise { from { transform: rotate(4deg) translateY(8px) scale(.96); } }
+.card.behind.rise, .card.behind2.rise { animation: none; }
+.card.liking .art > svg { transform: scale(1.1) rotate(-4deg); }
+.empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; border: 3px dashed var(--ink); border-radius: 34px; padding: 20px; }
+.empty .emptyart { width: 150px; }
+.empty b { font: 900 22px var(--display); letter-spacing: -.03em; }
+.empty span { color: var(--ink-2); font-size: 15px; margin-bottom: 8px; }
+.actions { display: flex; justify-content: center; gap: 20px; position: relative; z-index: 3; margin: -36px 0 12px; }
+.round { width: 68px; height: 68px; border-radius: 50%; border: 3px solid var(--ink); cursor: pointer; display: grid; place-items: center; padding: 0; }
+.round.no { background: var(--paper); color: var(--ink); }
+.round.yes { background: var(--ink); color: var(--pink); }
+.round.yes.burst { animation: heart-pulse .5s var(--spring); }
+.round.no.shake { animation: shake .4s ease; }
+@keyframes heart-pulse { 30% { transform: scale(1.2); } }
+@keyframes shake { 20% { transform: translateX(-6px) rotate(-8deg); } 50% { transform: translateX(5px) rotate(6deg); } 80% { transform: translateX(-2px); } }
+
+/* таб-бар */
+.tabbar { position: relative; z-index: 4; margin: 0 4px calc(var(--sab) + 6px); border-radius: 999px; padding: 6px; display: flex; background: var(--paper); border: 3px solid var(--ink); view-transition-name: tabbar; }
+.tab { flex: 1; min-width: 0; white-space: nowrap; border: none; background: none; border-radius: 999px; padding: 8px 2px 7px; display: flex; flex-direction: column; align-items: center; gap: 3px; font: 600 11.5px var(--body); color: var(--ink); cursor: pointer; position: relative; z-index: 1; }
+.tab svg { transition: transform .35s var(--spring); }
+.tab[aria-current="page"] { color: var(--paper); }
+.tabpill { position: absolute; inset: 0; border-radius: 999px; background: var(--ink); z-index: -1; view-transition-name: tabpill; }
+.tab[aria-current="page"] svg { animation: tab-hop .5s var(--spring); }
+@keyframes tab-hop { 40% { transform: translateY(-4px) scale(1.12); } }
+.tab .badge { position: absolute; top: 1px; left: 56%; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px; background: var(--pink); color: var(--paper); border: 2px solid var(--paper); font: 800 10.5px/15px var(--body); text-align: center; }
+.tabscreen .tabbar { position: absolute; left: 14px; right: 14px; bottom: 0; margin: 0 0 calc(var(--sab) + 6px); }
+
+/* мэтч: экран залит цветом цыпы */
+.match { align-items: center; justify-content: center; text-align: center; padding: calc(var(--sat) + 12px) 24px calc(var(--sab) + 18px); gap: 10px; }
+.match .burst { position: absolute; left: 50%; top: 40%; width: 320px; height: 320px; margin: -160px 0 0 -160px; z-index: 1; animation: burst-in .7s .15s var(--spring) both, spin 26s linear infinite; }
+.match .burst svg { width: 100%; height: 100%; }
+@keyframes burst-in { from { transform: scale(.5); opacity: 0; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.match .cutout { width: 220px; z-index: 2; view-transition-name: hero; }
+.match .cutout .art { animation: wiggle 2.4s .6s ease-in-out infinite; }
+@keyframes wiggle { 0%, 100% { transform: rotate(0); } 10% { transform: rotate(-6deg); } 20% { transform: rotate(5deg); } 30% { transform: rotate(0); } }
+.match .nm { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%) rotate(-3deg); white-space: nowrap; padding: 6px 16px; border-radius: 999px; background: var(--paper); border: 3px solid var(--ink); font: 800 15px var(--display); animation: rise-in .5s .35s var(--spring) both; }
+.match h2 { font: 900 84px/1 var(--display); margin: 20px 0 0; letter-spacing: -.05em; display: flex; justify-content: center; position: relative; z-index: 2; }
+.match h2 span { display: inline-block; animation: letter .7s var(--spring) both; }
+@keyframes letter { from { transform: translateY(40px) scale(.4) rotate(-12deg); opacity: 0; } }
+.match p { margin: 0 0 8px; font: 500 16px/1.45 var(--body); max-width: 300px; position: relative; z-index: 2; animation: rise-in .6s .45s var(--spring) both; }
+.match .btns { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 0; position: relative; z-index: 2; animation: rise-in .6s .55s var(--spring) both; }
+.confetti { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.confetti i { position: absolute; top: -20px; width: 10px; height: 14px; border-radius: 3px; border: 2px solid var(--ink); animation: fall linear forwards; }
+@keyframes fall { to { transform: translateY(900px) rotate(540deg); } }
+.flood { position: absolute; inset: 0; z-index: 50; pointer-events: none; clip-path: circle(0 at var(--x) var(--y)); animation: flood .45s cubic-bezier(.6, 0, .3, 1) forwards; transition: opacity .4s ease; }
+.flood.out { opacity: 0; }
+@keyframes flood { to { clip-path: circle(var(--r) at var(--x) var(--y)); } }
+
+/* товар */
+.product .top { height: 46%; flex: none; display: grid; place-items: end center; position: relative; overflow: hidden; }
+.product .cutout { width: 200px; margin-bottom: 4px; view-transition-name: hero; }
+.product .bar { position: absolute; top: calc(var(--sat) + 4px); left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+.product .bar .crumb { font: 800 15px var(--display); }
+.product .sheet { flex: 1; position: relative; z-index: 3; padding: 22px 22px calc(var(--sab) + 12px); display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; overflow: auto; }
+.product .sheet > * { animation: rise-in .55s var(--spring) both; }
+.product .sheet > *:nth-child(2) { animation-delay: .05s; } .product .sheet > *:nth-child(3) { animation-delay: .1s; } .product .sheet > *:nth-child(4) { animation-delay: .15s; } .product .sheet > *:nth-child(5) { animation-delay: .2s; } .product .sheet > *:nth-child(6) { animation-delay: .25s; }
+.product .big { font-size: 46px; }
+.meta { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.meta span { border: 2.5px solid var(--ink); border-radius: 999px; padding: 5px 12px; font: 600 13.5px var(--body); background: var(--paper); }
+.about { display: inline-flex; gap: 6px; align-items: center; background: none; border: none; font: 700 15px var(--hand); color: var(--ink); cursor: pointer; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.about[aria-expanded="true"] { text-decoration-color: var(--pink); }
+.desc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s var(--out), opacity .3s; opacity: 0; width: 100%; }
+.desc.open { grid-template-rows: 1fr; opacity: 1; }
+.desc > div { overflow: hidden; font-size: 15px; line-height: 1.5; color: var(--ink-2); max-width: 36ch; margin: 0 auto; }
+.price { display: flex; align-items: baseline; gap: 10px; justify-content: center; font-variant-numeric: tabular-nums; }
+.price s { position: relative; text-decoration: none; font: 600 18px var(--body); color: var(--ink-2); }
+.price s::after { content: ""; position: absolute; left: -2px; right: -2px; top: 52%; height: 3px; background: var(--pink); border-radius: 2px; transform-origin: left; animation: strike .5s .5s var(--out) both; }
+@keyframes strike { from { transform: scaleX(0); } }
+.price b { font: 900 38px var(--display); letter-spacing: -.03em; min-width: 4.5ch; display: inline-block; }
+.price em { font-style: normal; background: var(--lime); border: 2.5px solid var(--ink); padding: 3px 10px; border-radius: 999px; font: 800 13px var(--display); align-self: center; animation: badge .6s 1.1s var(--spring) both; }
+@keyframes badge { from { transform: scale(0) rotate(-30deg); } }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.chip { min-width: 52px; padding: 9px 14px; border-radius: 999px; border: 2.5px solid var(--ink); background: var(--paper); font: 700 15px var(--body); color: var(--ink); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); animation: chip-pop .4s var(--spring); }
+@keyframes chip-pop { 40% { transform: scale(1.14); } }
+.timer { font: 700 14px var(--hand); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.product .spacer { flex: 1; }
+.likebtn svg { transition: transform .45s var(--spring); }
+.likebtn.on svg { animation: heart-pulse .5s var(--spring); }
+#payBtn { position: relative; overflow: hidden; }
+#payBtn .fill { position: absolute; inset: 0; background: var(--pink); transform-origin: left; transform: scaleX(0); }
+#payBtn.paying .fill { animation: payfill .9s ease-in-out forwards; }
+@keyframes payfill { to { transform: scaleX(1); } }
+#payBtn.done { background: var(--lime); color: var(--ink); }
+#payBtn .check { width: 24px; height: 24px; }
+#payBtn .check path { stroke: var(--ink); stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw .4s .05s ease forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* спасибо */
+.thanks { align-items: center; justify-content: center; text-align: center; gap: 14px; padding: calc(var(--sat) + 12px) 24px calc(var(--sab) + 20px); }
+.thanks .big { position: relative; z-index: 2; font-size: 42px; animation: rise-in .6s var(--spring) both; }
+.thanks .heart { width: 220px; height: auto; position: relative; z-index: 2; animation: pop .7s .15s var(--spring) both, beat 1.4s 1s ease-in-out infinite; }
+@keyframes beat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.06); } 30% { transform: scale(1); } 45% { transform: scale(1.04); } }
+.thanks .order { position: relative; z-index: 2; background: var(--paper); border: 3px solid var(--ink); border-radius: 22px; padding: 14px 18px; font-size: 15px; line-height: 1.5; animation: rise-in .6s .3s var(--spring) both; font-variant-numeric: tabular-nums; }
+.thanks .pill { position: relative; z-index: 2; animation: rise-in .6s .4s var(--spring) both; }
+.thanks .link { animation: rise-in .6s .5s var(--spring) both; }
+.floaty { position: absolute; bottom: -30px; z-index: 1; pointer-events: none; animation: floaty linear forwards; }
+@keyframes floaty { to { transform: translateY(-110vh) rotate(var(--rot)); } }
+
+/* шторки */
+.sheet-bg { position: absolute; inset: 0; background: rgba(21,21,21,.4); z-index: 30; display: flex; align-items: flex-end; animation: vt-fade-in .25s ease both; }
+.sheet-bg.closing { animation: vt-fade-out .25s ease both; }
+.lsheet { background: var(--ground); width: 100%; border-radius: 30px 30px 0 0; border: 3px solid var(--ink); border-bottom: none; padding: 10px 20px calc(var(--sab) + 20px); max-height: 74%; overflow: auto; animation: sheet-up .5s var(--spring) both; touch-action: none; }
+.sheet-bg.closing .lsheet { animation: sheet-down .25s ease-in both; }
+@keyframes sheet-up { from { transform: translateY(100%); } }
+@keyframes sheet-down { to { transform: translateY(100%); } }
+.lsheet .grab { width: 44px; height: 5px; border-radius: 3px; background: var(--ink); margin: 0 auto 12px; opacity: .3; }
+.lsheet .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.lsheet h3 { font: 900 26px var(--display); letter-spacing: -.03em; margin: 0; }
+.lsheet .x { width: 38px; height: 38px; border-radius: 50%; border: 2.5px solid var(--ink); background: var(--paper); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 2px dashed var(--line); animation: rise-in .45s var(--spring) both; }
+.row .thumb { width: 54px; height: 54px; border-radius: 16px; border: 2.5px solid var(--ink); display: grid; place-items: center; flex: none; overflow: hidden; }
+.row .thumb svg { width: 50px; height: 50px; }
+.row .t { flex: 1; min-width: 0; font: 700 16px var(--display); }
+.row .t small { display: block; color: var(--ink-2); font: 500 13px var(--body); margin-top: 2px; }
+.row button { font: 700 13px var(--body); border: none; background: var(--ink); color: var(--paper); border-radius: 999px; padding: 10px 14px; cursor: pointer; }
+.row button.bought { background: var(--lime); color: var(--ink); border: 2px solid var(--ink); }
+.note { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 2px dashed var(--line); text-align: left; }
+.note .ic { width: 44px; height: 44px; border-radius: 14px; border: 2.5px solid var(--ink); display: grid; place-items: center; flex: none; overflow: hidden; }
+.note .ic svg { width: 40px; height: 40px; }
+.note b { display: block; font: 700 15px var(--display); }
+.note small { color: var(--ink-2); font-size: 13px; line-height: 1.35; display: block; margin-top: 2px; }
+.note .go2 { margin-left: auto; align-self: center; font: 700 13px var(--body); border: none; background: var(--ink); color: var(--paper); border-radius: 999px; padding: 9px 13px; cursor: pointer; }
+
+/* вкладки «Цыпа» и «Профиль» */
+.tabscreen .top { height: 44%; flex: none; display: grid; place-items: end center; position: relative; overflow: hidden; }
+.tabscreen .top .cutout { width: 200px; margin-bottom: 4px; }
+.tabscreen .sheet { flex: 1; position: relative; z-index: 3; padding: 20px 22px 124px; display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; overflow: auto; }
+.tabscreen .big { font-size: 44px; }
+.tabhead { padding: calc(var(--sat) + 16px) 22px 0; position: relative; z-index: 2; }
+.nopet { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 0 32px 130px; }
+.nopet .sticker { animation: wobble 1.8s ease-in-out infinite; transform-origin: 50% 90%; cursor: pointer; }
+@keyframes wobble { 0%, 60%, 100% { transform: rotate(0); } 70% { transform: rotate(-8deg); } 80% { transform: rotate(7deg); } 90% { transform: rotate(-4deg); } }
+.nopet b { font: 900 26px var(--display); letter-spacing: -.03em; }
+.nopet p { margin: 0 0 6px; line-height: 1.45; font-size: 16px; }
+.pstats { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+.prow { display: grid; grid-template-columns: 22px 84px 1fr 32px; align-items: center; gap: 8px; text-align: left; font: 600 15px var(--body); animation: rise-in .5s var(--spring) both; }
+.pstats .prow:nth-child(2) { animation-delay: .06s; } .pstats .prow:nth-child(3) { animation-delay: .12s; } .pstats .prow:nth-child(4) { animation-delay: .18s; }
+.prow .pic svg { width: 19px; height: 19px; display: block; }
+.prow i { height: 14px; border-radius: 99px; border: 2.5px solid var(--ink); background: var(--paper); overflow: hidden; }
+.prow i span { display: block; height: 100%; transition: width .9s var(--out); border-right: 2.5px solid var(--ink); }
+.prow b { text-align: right; font: 800 14px var(--display); font-variant-numeric: tabular-nums; }
+.watchnote { display: flex; align-items: center; gap: 12px; text-align: left; background: var(--paper); border: 2.5px dashed var(--ink); border-radius: 20px; padding: 12px 14px; font: 600 14px/1.35 var(--body); width: 100%; margin-top: 4px; }
+.watchnote svg { flex: none; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+.tiles div { background: var(--paper); border: 2.5px solid var(--ink); border-radius: 20px; padding: 12px 6px; display: flex; flex-direction: column; gap: 2px; animation: rise-in .5s var(--spring) both; }
+.tiles div:nth-child(1) { background: var(--bubblegum); } .tiles div:nth-child(2) { background: var(--cyan); animation-delay: .06s; } .tiles div:nth-child(3) { background: var(--lime); animation-delay: .12s; }
+.tiles b { font: 900 22px var(--display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.tiles small { font-size: 12px; font-weight: 600; }
+.sec { font: 900 24px var(--display); letter-spacing: -.03em; margin: 8px 0 0; align-self: flex-start; }
+.orders { width: 100%; text-align: left; }
+.orders .osum { font: 800 15px var(--display); white-space: nowrap; }
+.orders .none { color: var(--ink-2); margin: 0; font-size: 15px; }
+.reset { background: none; border: none; color: var(--ink-2); font: 600 14px var(--body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; margin-top: 8px; padding: 8px; }
+.confirm { background: var(--paper); border: 3px solid var(--ink); border-radius: 20px; padding: 14px; display: flex; flex-direction: column; gap: 10px; width: 100%; font-size: 15px; animation: rise-in .4s var(--spring) both; }
+.confirm div { display: flex; gap: 8px; justify-content: center; }
+.confirm .pill { padding: 11px 18px; font-size: 15px; }
+.petphone .cutout .art { cursor: pointer; transform-origin: 50% 90%; animation: idle 2.6s ease-in-out infinite; }
+@keyframes idle { 0%, 100% { transform: translateY(0) scale(1); } 45% { transform: translateY(-5px) scale(1.01, .99); } 55% { transform: translateY(0) scale(1.02, .97); } }
+.petphone .cutout .art.boing { animation: boing .6s var(--spring); }
+@keyframes boing { 0% { transform: scale(1); } 25% { transform: translateY(4px) scale(1.12, .86); } 55% { transform: translateY(-26px) scale(.94, 1.08); } 100% { transform: none; } }
+.peep { position: absolute; top: calc(var(--sat) + 30px); right: 12%; z-index: 4; background: var(--paper); border: 3px solid var(--ink); font: 700 17px var(--hand); padding: 6px 14px; border-radius: 18px 18px 18px 4px; pointer-events: none; animation: peep 1.1s var(--spring) forwards; }
+@keyframes peep { 0% { transform: scale(0); opacity: 0; } 25% { transform: scale(1); opacity: 1; } 75% { opacity: 1; } 100% { transform: translateY(-16px); opacity: 0; } }
+.hatchegg { position: absolute; inset: 0; display: grid; place-items: end center; padding-bottom: 20px; z-index: 3; pointer-events: none; }
+.hatchegg .shell { position: relative; width: 120px; height: 150px; animation: egg-shake .5s ease-in-out 2; }
+.hatchegg .half { position: absolute; inset: 0; }
+.hatchegg .half.top { animation: shell-top .8s 1s var(--out) forwards; }
+.hatchegg .half.bot { animation: shell-bot .8s 1s var(--out) forwards; }
+@keyframes egg-shake { 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
+@keyframes shell-top { to { transform: translate(-40px, -90px) rotate(-50deg); opacity: 0; } }
+@keyframes shell-bot { to { transform: translateY(60px) rotate(10deg); opacity: 0; } }
+.hatching .cutout .art { animation: pop .7s 1.1s var(--spring) both, idle 2.6s 2s ease-in-out infinite; }
+
+/* общая анимация */
+@keyframes pop { from { transform: scale(.4); opacity: 0; } }
+@keyframes drop-in { from { transform: translateY(-20px); opacity: 0; } }
+@keyframes rise-in { from { transform: translateY(14px); opacity: 0; } }
+.pill, .round, .tab, .chip, .iconbtn, .row button, .about { transition: transform .35s var(--spring), background-color .2s, color .2s, box-shadow .2s; }
+.pill:active, .round:active, .chip:active, .iconbtn:active, .row button:active { transform: scale(.92); transition-duration: .08s; }
+.tab:active svg { transform: scale(.82); }
+.spark { position: absolute; pointer-events: none; z-index: 40; width: 16px; height: 16px; animation: spark .8s var(--out) forwards; }
+@keyframes spark { from { transform: translate(-50%, -50%) scale(.4); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1) rotate(var(--rot)); opacity: 0; } }
+.card, .tab, .pill, .round { -webkit-user-select: none; user-select: none; }
+
+/* переходы между экранами */
+html.vt .screen { animation: none; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .42s; animation-timing-function: var(--out); }
+html[data-nav="fwd"]::view-transition-old(root) { animation-name: vt-out-left; }
+html[data-nav="fwd"]::view-transition-new(root) { animation-name: vt-in-right; }
+html[data-nav="back"]::view-transition-old(root) { animation-name: vt-out-right; }
+html[data-nav="back"]::view-transition-new(root) { animation-name: vt-in-left; }
+html[data-nav="tab"]::view-transition-old(root) { animation: vt-fade-out .2s ease both; }
+html[data-nav="tab"]::view-transition-new(root) { animation: vt-fade-in .26s ease both; }
+html[data-nav="zoom"]::view-transition-old(root) { animation: vt-fade-out .3s ease both; }
+html[data-nav="zoom"]::view-transition-new(root) { animation: vt-fade-in .3s ease both; }
+html[data-nav="fade"]::view-transition-old(root) { animation: vt-fade-out .35s ease both; }
+html[data-nav="fade"]::view-transition-new(root) { animation: vt-rise .5s var(--out) both; }
+@keyframes vt-in-right { from { transform: translateX(28%); opacity: 0; } }
+@keyframes vt-out-left { to { transform: translateX(-16%); opacity: 0; } }
+@keyframes vt-in-left { from { transform: translateX(-16%); opacity: 0; } }
+@keyframes vt-out-right { to { transform: translateX(28%); opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; } }
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-rise { from { transform: translateY(24px) scale(.98); opacity: 0; } }
+::view-transition-group(hero) { animation-duration: .55s; animation-timing-function: cubic-bezier(.3, 1.25, .4, 1); }
+::view-transition-group(tabbar), ::view-transition-group(tabpill) { animation-duration: .38s; animation-timing-function: var(--spring); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+</style>
+<style>:root { --sat: 50px; --sab: 22px; } .screen-area { box-shadow: none; }</style>
+</head>
+<body>
+<div class="screen-area" id="app">
+  <div id="stage"></div>
+</div>
+<script>
+(function () {
+  var uid = 0;
+  var INK = "#151515", PAPER = "#F3F2EF";
+  // ---------- персонажи: плоские чернильные цыпы с огромным белым глазом ----------
+  function bird(o) {
+    o = Object.assign({ accent: "#FF3D8B", beak: "#FF8A2A", comb: true, tail: false, item: null, mood: null, dirt: 0 }, o);
+    var A = o.accent;
+    var items = {
+      tee: '<path d="M66 128 L82 118 L118 118 L134 128 L127 143 L118 139 L118 172 L82 172 L82 139 L73 143 Z" fill="#fff" stroke="' + INK + '" stroke-width="4" stroke-linejoin="round"/><text x="100" y="157" text-anchor="middle" font-family="Rubik,sans-serif" font-size="12" font-weight="900" fill="' + INK + '">птиц</text>',
+      mug: '<rect x="126" y="122" width="36" height="42" rx="7" fill="#fff" stroke="' + INK + '" stroke-width="4"/><path d="M162 131 q15 0 15 12 q0 12 -15 12" fill="none" stroke="' + INK + '" stroke-width="4"/><path d="M137 112 q5 -7 0 -14 M150 112 q5 -7 0 -14" stroke="' + INK + '" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="144" cy="143" r="6" fill="' + A + '"/>',
+      bag: '<path d="M124 132 h42 l-4 46 h-34 z" fill="' + A + '" stroke="' + INK + '" stroke-width="4" stroke-linejoin="round"/><path d="M135 132 q0 -17 10 -17 q10 0 10 17" fill="none" stroke="' + INK + '" stroke-width="4"/>',
+      socks: '<path d="M128 120 h17 v33 q0 8 8 8 h13 v15 h-25 q-13 0 -13 -13 z" fill="' + A + '" stroke="' + INK + '" stroke-width="4" stroke-linejoin="round"/><path d="M128 130 h17" stroke="' + INK + '" stroke-width="4"/>',
+      key: '<circle cx="148" cy="126" r="9" fill="none" stroke="' + INK + '" stroke-width="4"/><ellipse cx="148" cy="157" rx="14" ry="18" fill="#fff" stroke="' + INK + '" stroke-width="4"/><circle cx="143" cy="150" r="3" fill="' + A + '"/>',
+      bow: '<path d="M94 102 l-15 -10 v20 z M110 102 l15 -10 v20 z" fill="' + A + '" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/><circle cx="102" cy="102" r="5.5" fill="' + A + '" stroke="' + INK + '" stroke-width="3"/>'
+    };
+    var eyes = {
+      happy: '<path d="M127 74 q9 -11 18 0" fill="none" stroke="' + INK + '" stroke-width="4.5" stroke-linecap="round"/>',
+      sleep: '<path d="M127 70 q9 8 18 0" fill="none" stroke="' + INK + '" stroke-width="4.5" stroke-linecap="round"/>',
+      sad: '<circle cx="137" cy="77" r="6.5" fill="' + INK + '"/><path d="M121 51 l20 7" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M128 92 q-4 7 0 11 q4 -4 0 -11" fill="#36C8FF" stroke="' + INK + '" stroke-width="2"/>',
+      bored: '<circle cx="138" cy="76" r="6.5" fill="' + INK + '"/><path d="M120 71 a16 16 0 0 1 32 0 z" fill="' + INK + '"/>'
+    };
+    return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<ellipse cx="100" cy="189" rx="46" ry="6" fill="' + INK + '" opacity=".14"/>' +
+      '<path d="M88 164 v20 M81 185 h14 M112 164 v20 M105 185 h14" stroke="' + INK + '" stroke-width="5.5" stroke-linecap="round"/>' +
+      (o.tail ? '<path d="M44 118 C 24 100 18 84 26 74 C 30 92 38 96 46 98 C 36 84 38 70 48 64 C 50 84 56 94 64 100 Z" fill="' + INK + '"/>' : '') +
+      '<ellipse cx="98" cy="128" rx="60" ry="47" fill="' + INK + '"/>' +
+      '<circle cx="124" cy="76" r="37" fill="' + INK + '"/>' +
+      (o.comb ? '<g fill="' + A + '" stroke="' + INK + '" stroke-width="3"><circle cx="110" cy="42" r="9"/><circle cx="123" cy="35" r="10.5"/><circle cx="137" cy="42" r="9"/></g><path d="M151 94 q5 13 -4 16 q-7 -7 0 -16" fill="' + A + '" stroke="' + INK + '" stroke-width="3"/>'
+        : '<path d="M114 42 q-2 -14 9 -12 M124 39 q4 -14 14 -6" fill="none" stroke="' + INK + '" stroke-width="5" stroke-linecap="round"/>') +
+      '<path d="M156 68 L180 78 L156 89 Z" fill="' + o.beak + '" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/>' +
+      '<circle cx="136" cy="72" r="16" fill="#fff"/>' +
+      (eyes[o.mood] || '<circle cx="140" cy="73" r="7" fill="' + INK + '"/><circle cx="142.5" cy="70" r="2.2" fill="#fff"/>') +
+      '<ellipse cx="128" cy="96" rx="7" ry="4" fill="' + A + '"/>' +
+      '<path d="M60 120 q22 -18 48 2 q-10 26 -40 21" fill="none" stroke="' + PAPER + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path d="M70 142 q4 5 10 5" fill="none" stroke="' + PAPER + '" stroke-width="3" stroke-linecap="round"/>' +
+      (o.dirt ? '<g fill="#D9B98C" opacity="' + o.dirt + '"><path d="M70 150 q6 -9 13 -1 q7 -4 6 5 q-9 7 -19 -4z"/><circle cx="124" cy="158" r="6"/><circle cx="104" cy="104" r="5"/><ellipse cx="142" cy="122" rx="6" ry="4"/></g>' : '') +
+      (o.item ? items[o.item] : '') +
+      '</svg>';
+  }
+  function flamingo() {
+    return '<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<ellipse cx="96" cy="211" rx="38" ry="6" fill="' + INK + '" opacity=".14"/>' +
+      '<path d="M96 160 v48 M96 186 l16 -10 v-10" stroke="' + INK + '" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<ellipse cx="88" cy="140" rx="52" ry="31" fill="' + INK + '"/>' +
+      '<path d="M128 134 C 154 118 152 90 128 78 C 102 64 102 32 132 26" stroke="' + INK + '" stroke-width="17" fill="none" stroke-linecap="round"/>' +
+      '<circle cx="137" cy="27" r="19" fill="' + INK + '"/>' +
+      '<path d="M151 20 q24 4 20 30 q-7 -5 -11 -7 q-2 -12 -11 -14 z" fill="#fff" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/>' +
+      '<path d="M163 39 q2 6 -1 12" stroke="' + INK + '" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<circle cx="138" cy="24" r="10" fill="#fff"/><circle cx="141" cy="25" r="4.5" fill="' + INK + '"/>' +
+      '<path d="M54 134 q26 -18 56 -2 q-14 22 -44 16" fill="none" stroke="' + PAPER + '" stroke-width="3.5" stroke-linecap="round"/>' +
+      '</svg>';
+  }
+  // наклейки-каракули: звёздочка, сердце, яйцо
+  function fire(size, r) {
+    return '<svg class="sticker" style="--r:' + (r || 0) + 'deg;width:' + size + 'px" viewBox="0 0 60 60" aria-hidden="true"><g stroke="' + INK + '" stroke-width="6" stroke-linecap="round"><path d="M30 6 V54"/><path d="M9 18 L51 42"/><path d="M9 42 L51 18"/></g></svg>';
+  }
+  function heartSt(size, r) {
+    return '<svg class="sticker" style="--r:' + (r || 0) + 'deg;width:' + size + 'px" viewBox="0 0 60 54" aria-hidden="true"><path d="M30 49 C 12 37 3 28 4 17 C 5 8 16 2 25 8 L30 12 L35 8 C 44 2 55 8 56 17 C 57 28 48 37 30 49 Z" fill="#FF3D8B" stroke="' + INK + '" stroke-width="4" stroke-linejoin="round"/></svg>';
+  }
+  function egg(size, r) {
+    return '<svg class="sticker" style="--r:' + (r || 0) + 'deg;width:' + size + 'px" viewBox="0 0 50 62" aria-hidden="true"><ellipse cx="25" cy="34" rx="20" ry="25" fill="#fff" stroke="' + INK + '" stroke-width="4"/><path d="M15 26 q2 -7 7 -10" stroke="' + INK + '" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
+  }
+  function heartBird() {
+    return '<svg class="heart" viewBox="0 0 240 210" aria-hidden="true">' +
+      '<path d="M120 196 C 40 140 6 104 14 62 C 22 22 72 8 104 38 L120 54 L136 38 C 168 8 218 22 226 62 C 234 104 200 140 120 196 Z" fill="#fff" stroke="' + INK + '" stroke-width="6" stroke-linejoin="round"/>' +
+      '<g transform="translate(64 44) scale(.56)">' + bird({ item: "bow", mood: "happy", comb: false }).replace(/<svg[^>]*>|<\/svg>/g, "") + '</g></svg>';
+  }
+  // рисованные завитки и штрихи на фоне экранов
+  var clouds = '<div class="doodles" aria-hidden="true">' +
+    '<svg class="dd d1" viewBox="0 0 80 40"><path d="M4 30 C 14 4 28 4 30 20 C 32 34 46 34 50 14 C 53 2 66 4 76 16" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>' +
+    '<svg class="dd d2" viewBox="0 0 40 40"><g stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M20 4 V36"/><path d="M4 20 H36"/><path d="M9 9 L31 31"/><path d="M31 9 L9 31"/></g></svg>' +
+    '<svg class="dd d3" viewBox="0 0 60 30"><path d="M4 22 q8 -14 16 0 q8 14 16 0 q8 -14 20 -2" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>' +
+    '<svg class="dd d4" viewBox="0 0 30 30"><circle cx="15" cy="15" r="10" fill="none" stroke="currentColor" stroke-width="4"/></svg>' +
+    '</div>';
+
+  // ---------- data (примерные товары) ----------
+  // цвет гребешка и щёк цыпы-питомца после покупки товара
+  var LOOKS = {
+    flamingo: { accent: "#FF3D8B", comb: false },
+    pushok: { accent: "#FF3D8B", comb: false },
+    petya: { accent: "#C8F23C", tail: true },
+    ryaba: { accent: "#FF3D8B" },
+    gosha: { accent: "#FF8A2A", tail: true },
+    nesushka: { accent: "#FFD60A" },
+    bro: { accent: "#FFD60A" }
+  };
+  // bg — сплошное поле карточки, say — что говорит цыпа
+  var PRODUCTS = [
+    { id: "flamingo", name: "Фламинго", what: "Футболка oversize", meta: ["футболка", "oversize", "хлопок"], old: 1000, price: 99, bg: "#FF7FB6", say: "Стою на одной ноге. Возьмёшь — встану на две!", art: flamingo, sizes: ["S", "M", "L", "XL"] },
+    { id: "pushok", name: "Пушок", what: "Плюшевая цыпа, 25 см", meta: ["игрушка", "25 см", "плюш"], old: 1200, price: 590, bg: "#FFD60A", say: "Обнимешь — не отпущу. Я плюшевый!", art: function () { return bird({ accent: "#FF3D8B", comb: false, item: "bow" }); } },
+    { id: "petya", name: "Петя", what: "Кружка «Петух», 350 мл", meta: ["кружка", "350 мл", "керамика"], old: 700, price: 349, bg: "#FF8A2A", say: "Ку-ка-ре-кофе? Налей в меня утро.", art: function () { return bird({ accent: "#C8F23C", tail: true, item: "mug" }); } },
+    { id: "ryaba", name: "Ряба", what: "Шоппер из хлопка", meta: ["шоппер", "38×42", "хлопок"], old: 900, price: 449, bg: "#C8F23C", say: "Снесу всё: продукты, книжки, ноутбук.", art: function () { return bird({ accent: "#FF3D8B", item: "bag" }); } },
+    { id: "gosha", name: "Гоша", what: "Носки «Лапки», 2 пары", meta: ["носки", "2 пары", "36–44"], old: 500, price: 249, bg: "#A99BFF", say: "Две пары лапок. Тепло — моя тема.", art: function () { return bird({ accent: "#FF8A2A", tail: true, item: "socks" }); } },
+    { id: "nesushka", name: "Несушка", what: "Брелок «Яичко»", meta: ["брелок", "6 см", "эмаль"], old: 400, price: 199, bg: "#36C8FF", say: "Повесь меня на ключи — не потеряешь.", art: function () { return bird({ accent: "#FFD60A", item: "key" }); } },
+    { id: "bro", name: "Бройлер Бро", what: "Футболка «птиц»", meta: ["футболка", "regular", "хлопок"], old: 1500, price: 790, bg: "#FF6A5C", say: "Бро, футболка сама себя не наденет.", art: function () { return bird({ accent: "#FFD60A", item: "tee" }); }, sizes: ["S", "M", "L", "XL"] }
+  ];
+
+  var FLOW = [
+    { id: "splash", t: "Загрузка", s: "Птичка покачивается, пока грузится каталог" },
+    { id: "register", t: "Регистрация", s: "Имя и телефон" },
+    { id: "deck", t: "Выбери цыпочку", s: "Свайп-карточки: мимо / хочу" },
+    { id: "match", t: "Мэтч", s: "Лайк открывает скидку" },
+    { id: "product", t: "Товар", s: "Цена до и после мэтча, размер" },
+    { id: "thanks", t: "Спасибо за покупку", s: "Заказ оформлен, назад к свайпам" }
+  ];
+
+  var STORE = "ptichki-v1";
+  var state = { screen: "splash", user: "", phone: "", registered: false, deck: PRODUCTS.slice(), liked: [], current: PRODUCTS[0], size: "M", orders: 0, orderList: [], pet: null, petNew: false };
+  function byId(id) { return PRODUCTS.find(function (p) { return p.id === id; }); }
+  function save() {
+    try {
+      localStorage.setItem(STORE, JSON.stringify({
+        user: state.user, phone: state.phone, registered: state.registered,
+        deck: state.deck.map(function (p) { return p.id; }), liked: state.liked.map(function (p) { return p.id; }),
+        orders: state.orders, orderList: state.orderList.map(function (o) { return { id: o.p.id, size: o.size, num: o.num, at: o.at }; }),
+        pet: state.pet, seen: state.seen || 0
+      }));
+    } catch (e) {}
+  }
+  function load() {
+    try {
+      var d = JSON.parse(localStorage.getItem(STORE) || "null"); if (!d) return;
+      state.user = d.user || ""; state.phone = d.phone || ""; state.registered = !!d.registered;
+      state.deck = (d.deck || []).map(byId).filter(Boolean);
+      state.liked = (d.liked || []).map(byId).filter(Boolean);
+      state.orders = d.orders || 0;
+      state.orderList = (d.orderList || []).map(function (o) { return { p: byId(o.id), size: o.size, num: o.num, at: o.at }; }).filter(function (o) { return o.p; });
+      state.pet = d.pet || null;
+      state.seen = d.seen || 0;
+    } catch (e) {}
+  }
+  function phoneGrainsLine() { return state.pet ? state.pet.name + " " + moodOf(state.pet).text : "из покупки вылупится цыпа"; }
+  var stage = document.getElementById("stage");
+  var splashTimer = null;
+
+  function rub(n) { return n.toLocaleString("ru-RU") + " ₽"; }
+  function pct(p) { return Math.round((1 - p.price / p.old) * 100); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function h(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstElementChild; }
+  var ICON = {
+    x: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    heart: '<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.4 3.2 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.8 0 5.9 3.9 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg>',
+    back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>',
+    bell: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a6 6 0 0 0-6 6v4l-2 3v1h16v-1l-2-3V8a6 6 0 0 0-6-6zm0 20a3 3 0 0 0 3-3H9a3 3 0 0 0 3 3z"/></svg>',
+    go: '<span class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>',
+    info: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="#7E8CA6"/><path d="M11 10h2v7h-2zM11 6.5h2v2h-2z" fill="#fff"/></svg>',
+    home: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+    cards: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="3" width="13" height="17" rx="3" transform="rotate(8 12 12)"/><rect x="4" y="4" width="13" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/></svg>',
+    likes: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.4 3.2 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.8 0 5.9 3.9 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg>',
+    user: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4.5"/><path d="M3.5 21c.8-4.4 4.2-7 8.5-7s7.7 2.6 8.5 7z"/></svg>'
+  };
+
+  function renderRail() { save(); }
+
+  // ---------- router ----------
+  var reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (document.startViewTransition && !reduceMotion) document.documentElement.classList.add("vt");
+  // dir: fwd | back | tab | zoom | fade — направление анимации перехода
+  function go(id, dir) {
+    clearTimeout(splashTimer);
+    function swap() {
+      state.screen = id;
+      stage.innerHTML = "";
+      stage.appendChild(SCREENS[id]());
+      save();
+    }
+    if (document.startViewTransition && !reduceMotion && !document.hidden) {
+      document.documentElement.dataset.nav = dir || "fwd";
+      var done = false;
+      var once = function () { if (!done) { done = true; swap(); } };
+      try {
+        var vt = document.startViewTransition(once);
+        vt.ready.catch(function () {});
+        vt.finished.catch(function () {});
+        vt.updateCallbackDone.catch(once);
+      } catch (e) { once(); }
+      setTimeout(once, 300);   // если переход отменили, экран всё равно сменится
+    } else swap();
+  }
+  // плавная анимация 0→1 с гарантированным последним кадром (даже если кадры не приходят)
+  function tween(dur, step) {
+    if (reduceMotion) { step(1); return; }
+    var t0 = performance.now(), finished = false;
+    function f(t) {
+      if (finished) return;
+      var k = Math.min(1, (t - t0) / dur);
+      step(1 - Math.pow(1 - k, 3));
+      if (k < 1) requestAnimationFrame(f); else finished = true;
+    }
+    requestAnimationFrame(f);
+    setTimeout(function () { if (!finished) { finished = true; step(1); } }, dur + 120);
+  }
+  function nextFrame(fn) { var ran = false; function go() { if (!ran) { ran = true; fn(); } } requestAnimationFrame(function () { requestAnimationFrame(go); }); setTimeout(go, 80); }
+  function letters(text) { return Array.from(text).map(function (ch, i) { return '<span style="animation-delay:' + (i * 0.05).toFixed(2) + 's">' + (ch === " " ? "&nbsp;" : esc(ch)) + '</span>'; }).join(""); }
+  // разлёт сердечек/искр из точки
+  function sparks(x, y, color, n, shape) {
+    for (var i = 0; i < (n || 10); i++) {
+      var a = Math.PI * 2 * i / (n || 10) + Math.random() * 0.5, d = 50 + Math.random() * 50;
+      var s = document.createElement("span");
+      s.className = "spark";
+      s.innerHTML = shape === "dot" ? '<svg viewBox="0 0 10 10" width="10" height="10"><circle cx="5" cy="5" r="5" fill="currentColor"/></svg>' : ICON.likes.replace('width="22" height="22"', 'width="16" height="16"');
+      s.style.left = x + "px"; s.style.top = y + "px"; s.style.color = color || "var(--hot)";
+      s.style.setProperty("--dx", Math.cos(a) * d + "px"); s.style.setProperty("--dy", Math.sin(a) * d + "px");
+      s.style.setProperty("--rot", (Math.random() * 80 - 40) + "deg");
+      appEl.appendChild(s);
+      setTimeout(function (n) { n.remove(); }.bind(null, s), 850);
+    }
+  }
+  function centerOf(el) { var r = el.getBoundingClientRect(), a = appEl.getBoundingClientRect(); return { x: r.left - a.left + r.width / 2, y: r.top - a.top + r.height / 2 }; }
+  var appEl = document.getElementById("app");
+
+  var SCREENS = {
+    splash: function () {
+      var el = h('<section class="screen splash">' + clouds +
+        egg(40, -14).replace('class="sticker"', 'class="sticker" style="top:20%;left:14%;--r:-14deg;width:40px"') +
+        heartSt(46, 12).replace('class="sticker"', 'class="sticker" style="top:24%;right:13%;--r:12deg;width:46px"') +
+        '<div class="hero">' + bird({ comb: false, mood: "happy" }) + '</div><div class="logo">' + letters("птички") + '</div><div class="sub">мерч, который хочется свайпать</div>' +
+        '<div class="loader"><i></i></div></section>');
+      // ссылка прямо на экран: #deck, #mypet, #profile, #match, #product
+      function next() {
+        var want = location.hash.slice(1);
+        if (state.registered && ["deck", "mypet", "profile", "match", "product", "thanks"].indexOf(want) >= 0) go(want, "fade");
+        else go(state.registered ? "deck" : "register", "fade");
+      }
+      splashTimer = setTimeout(next, 1600);
+      el.addEventListener("click", next);
+      return el;
+    },
+
+    register: function () {
+      var el = h(
+        '<section class="screen reg">' +
+          '<div class="top tint" style="background:#FF7FB6">' + clouds +
+            fire(40, -10).replace('class="sticker"', 'class="sticker" style="top:30%;left:12%;--r:-10deg;width:40px"') +
+            heartSt(40, 14).replace('class="sticker"', 'class="sticker" style="top:44%;right:12%;--r:14deg;width:40px"') +
+            '<p class="bubble" style="position:absolute;top:calc(var(--sat) + 18px);left:50%;transform:translateX(-50%) rotate(-2deg)">Пип! Давай знакомиться</p>' +
+            '<div class="cutout"><div class="art">' + bird({ comb: false }) + '</div></div>' +
+          '</div>' +
+          '<div class="sheet">' +
+            '<h2 class="big">привет!</h2>' +
+            '<p class="lead">Найдём вам цыпочку по вкусу.<br>Скидки открываются после мэтча.</p>' +
+            '<form id="regForm" style="display:flex;flex-direction:column;gap:12px">' +
+              '<div class="field"><label for="regName">Как вас зовут</label><input id="regName" autocomplete="given-name" placeholder="Имя" value="' + esc(state.user) + '" required></div>' +
+              '<div class="field"><label for="regPhone">Телефон</label><input id="regPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 000-00-00" value="' + esc(state.phone) + '"></div>' +
+              '<button class="pill pill-black wide" type="submit" style="margin-top:6px">Начать свайпать</button>' +
+            '</form>' +
+            '<div class="legal">Нажимая кнопку, вы соглашаетесь с условиями магазина</div>' +
+          '</div>' +
+        '</section>');
+      el.querySelector("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        state.user = el.querySelector("#regName").value.trim() || "Гость";
+        state.phone = el.querySelector("#regPhone").value.trim();
+        state.registered = true;
+        go("deck", "fwd");
+      });
+      // маска телефона: +7 900 000-00-00
+      var ph = el.querySelector("#regPhone");
+      ph.addEventListener("input", function () {
+        var d = ph.value.replace(/\D/g, "");
+        if (!d) { ph.value = ""; return; }
+        if (d[0] === "8") d = "7" + d.slice(1);
+        if (d[0] !== "7") d = "7" + d;
+        d = d.slice(0, 11);
+        var out = "+7";
+        if (d.length > 1) out += " " + d.slice(1, 4);
+        if (d.length > 4) out += " " + d.slice(4, 7);
+        if (d.length > 7) out += "-" + d.slice(7, 9);
+        if (d.length > 9) out += "-" + d.slice(9, 11);
+        ph.value = out;
+      });
+      return el;
+    },
+
+    deck: function () {
+      var el = h(
+        '<section class="screen deck">' +
+          '<header class="appbar"><div><b class="wordmark">птички</b><small class="hi">' + greeting() + ', ' + esc(state.user) + '</small></div>' +
+            '<button class="iconbtn" type="button" id="bellBtn" aria-label="Уведомления">' + ICON.bell + (hasNews() ? '<span class="dot"></span>' : '') + '</button></header>' +
+          '<p class="bubble say" id="say" aria-live="polite"></p>' +
+          '<div class="deck-wrap" id="deck"></div>' +
+          '<div class="actions">' +
+            '<button class="round no" type="button" id="noBtn" aria-label="Мимо">' + ICON.x + '</button>' +
+            '<button class="round yes" type="button" id="yesBtn" aria-label="Хочу">' + ICON.heart + '</button>' +
+          '</div>' +
+          tabbar("deck") +
+        '</section>');
+      var deckEl = el.querySelector("#deck");
+      drawDeck(deckEl);
+      el.querySelector("#noBtn").addEventListener("click", function () { flick(deckEl, -1); });
+      el.querySelector("#yesBtn").addEventListener("click", function () { flick(deckEl, 1); });
+      el.querySelector("#bellBtn").addEventListener("click", function () { openNotes(el); });
+      bindTabs(el);
+      return el;
+    },
+
+    mypet: function () {
+      var pet = state.pet;
+      if (!pet) {
+        var e0 = h('<section class="screen tint tabscreen" style="background:#A99BFF">' + clouds +
+          '<div class="tabhead"><h2 class="big">моя цыпа</h2></div>' +
+          '<div class="nopet">' + egg(90, -6).replace('class="sticker"', 'class="sticker" style="position:relative;width:90px"') +
+          '<b>цыпа ещё в яйце</b><p>Купите любой мерч, и из него вылупится цыпа. Ухаживать за ней можно на Apple Watch.</p>' +
+          '<button class="pill pill-black" type="button" id="toDeck">К свайпам</button></div>' +
+          tabbar("mypet") + '</section>');
+        e0.querySelector("#toDeck").addEventListener("click", function () { go("deck", "tab"); });
+        var eggEl = e0.querySelector(".nopet .sticker");
+        eggEl.addEventListener("click", function () {
+          eggEl.style.animation = "none"; void eggEl.offsetWidth;
+          eggEl.style.animation = "egg-shake .25s ease-in-out 3";
+          var c = centerOf(eggEl); sparks(c.x, c.y - 20, "#151515", 6, "dot");
+        });
+        bindTabs(e0);
+        return e0;
+      }
+      var fresh = state.petNew; state.petNew = false;
+      var el = h('<section class="screen tabscreen petphone' + (fresh ? ' hatching' : '') + '">' +
+        '<div class="top tint" style="background:' + (byId(pet.id) || PRODUCTS[1]).bg + '">' + clouds +
+          fire(40, -10).replace('class="sticker"', 'class="sticker" style="top:40%;left:12%;--r:-10deg;width:40px"') +
+          heartSt(36, 14).replace('class="sticker"', 'class="sticker" style="top:46%;right:12%;--r:14deg;width:36px"') +
+          '<div class="cutout"><div class="art" id="ppArt" role="button" aria-label="Погладить цыпу"></div></div>' +
+          (fresh ? '<div class="hatchegg"><div class="shell">' + ['<svg class="half top" viewBox="0 0 80 100"><path d="M7 54 A33 43 0 0 1 73 54 L69 60 L62 50 L55 60 L48 50 L41 60 L34 50 L27 60 L20 50 L13 60 L7 54 Z" fill="#fff" stroke="#151515" stroke-width="4" stroke-linejoin="round"/><path d="M24 40 q3 -10 10 -14" stroke="#151515" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>', '<svg class="half bot" viewBox="0 0 80 100"><path d="M7 54 L13 60 L20 50 L27 60 L34 50 L41 60 L48 50 L55 60 L62 50 L69 60 L73 54 A33 43 0 0 1 7 54 Z" fill="#fff" stroke="#151515" stroke-width="4" stroke-linejoin="round"/></svg>'].join("") + '</div></div>' : '') +
+        '</div>' +
+        '<div class="sheet">' +
+          '<h2 class="big">' + esc(pet.name) + '</h2>' +
+          '<div class="meta" id="ppMeta"></div>' +
+          '<div class="pstats" id="ppStats"></div>' +
+          '<div class="watchnote"><svg width="26" height="30" viewBox="0 0 26 30" aria-hidden="true"><rect x="5" y="0" width="16" height="5" rx="2" fill="#151515"/><rect x="5" y="25" width="16" height="5" rx="2" fill="#151515"/><rect x="1" y="4" width="24" height="22" rx="7" fill="#151515"/><circle cx="13" cy="15" r="5" fill="#C8F23C"/></svg><span>Кормить, мыть, играть и укладывать спать — в приложении «Птички» на Apple Watch</span></div>' +
+        '</div>' +
+        tabbar("mypet") + '</section>');
+      bindTabs(el);
+      // погладить: цыпа подпрыгивает и пищит
+      var art = el.querySelector("#ppArt"), peeps = ["пип!", "пи-пи!", "ко-ко!", "чмок!", "ещё!"];
+      art.addEventListener("click", function () {
+        art.classList.remove("boing"); void art.offsetWidth; art.classList.add("boing");
+        var top = el.querySelector(".top");
+        var b = h('<span class="peep">' + peeps[Math.floor(Math.random() * peeps.length)] + '</span>');
+        top.appendChild(b); setTimeout(function () { b.remove(); }, 1100);
+        var c = centerOf(art); sparks(c.x, c.y - 30, "#FF3D8B", 7);
+        if (state.pet && !state.pet.sleeping) { state.pet.fun = clamp(state.pet.fun + 1); save(); }
+      });
+      art.addEventListener("animationend", function (e) { if (e.animationName === "boing") art.classList.remove("boing"); });
+      if (fresh) setTimeout(function () { var c = centerOf(art); sparks(c.x, c.y, "#151515", 14, "dot"); }, 1150);
+      setTimeout(function () { refreshPhone(true); }, 0);
+      return el;
+    },
+
+    profile: function () {
+      var el = h('<section class="screen tabscreen profile">' +
+        '<div class="top tint" style="height:34%;background:#FFD60A">' + clouds +
+          '<div class="cutout" style="width:132px;height:132px;margin-top:calc(var(--sat) + 10px)"><div class="art">' + bird({ comb: false, mood: "happy" }) + '</div></div>' +
+        '</div>' +
+        '<div class="sheet">' +
+          '<h2 class="big" style="font-size:36px">' + esc(state.user.toLowerCase()) + '</h2>' +
+          (state.phone ? '<div class="meta"><span>' + esc(state.phone) + '</span></div>' : '') +
+          '<div class="tiles" id="pfTiles"></div>' +
+          '<h3 class="sec">заказы</h3>' +
+          '<div class="orders" id="pfOrders"></div>' +
+          '<div id="resetBox"><button class="reset" type="button" id="resetBtn">Выйти и начать заново</button></div>' +
+        '</div>' +
+        tabbar("profile") + '</section>');
+      bindTabs(el);
+      var box = el.querySelector("#resetBox");
+      box.addEventListener("click", function (e) {
+        var t = e.target.closest("button"); if (!t) return;
+        if (t.id === "resetBtn") {
+          box.innerHTML = '<div class="confirm">Удалить имя, мэтчи, заказы и цыпу с этого телефона?<div><button class="pill pill-black" type="button" id="resetYes">Удалить</button><button class="pill pill-white" type="button" id="resetNo">Отмена</button></div></div>';
+        } else if (t.id === "resetNo") {
+          box.innerHTML = '<button class="reset" type="button" id="resetBtn">Выйти и начать заново</button>';
+        } else if (t.id === "resetYes") {
+          try { localStorage.removeItem(STORE); } catch (err) {}
+          state.user = ""; state.phone = ""; state.registered = false; state.deck = PRODUCTS.slice(); state.liked = [];
+          state.orders = 0; state.orderList = []; state.pet = null; state.seen = 0;
+          go("splash", "fade");
+        }
+      });
+      setTimeout(function () { refreshPhone(true); }, 0);
+      return el;
+    },
+
+    match: function () {
+      var p = state.current;
+      var el = h(
+        '<section class="screen match" style="background:' + p.bg + '">' + clouds +
+          '<div class="burst" aria-hidden="true">' + burst() + '</div>' +
+          '<div class="confetti" id="conf"></div>' +
+          fire(52, -12).replace('class="sticker"', 'class="sticker" style="top:14%;left:12%;--r:-12deg;width:52px"') +
+          heartSt(46, 14).replace('class="sticker"', 'class="sticker" style="top:18%;right:12%;--r:14deg;width:46px"') +
+          '<div class="cutout"><div class="art">' + p.art() + '</div><span class="nm">' + esc(p.name) + '</span></div>' +
+          '<h2 aria-label="мэтч!">' + letters("мэтч!") + '</h2>' +
+          '<p>' + esc(state.user) + ', вы понравились друг другу. ' + esc(p.what) + ' теперь за <b>' + rub(p.price) + '</b> вместо ' + rub(p.old) + '.</p>' +
+          '<div class="btns"><button class="pill pill-black wide" type="button" id="buyBtn">Купить за ' + rub(p.price) + ICON.go + '</button>' +
+          '<button class="link" type="button" id="moreBtn">Продолжить свайпать</button></div>' +
+        '</section>');
+      var conf = el.querySelector("#conf");
+      var colors = ["#151515", "#FFFFFF", "#FF3D8B", "#FFD60A", "#C8F23C", "#36C8FF"];
+      for (var i = 0; i < 40; i++) {
+        var c = document.createElement("i");
+        c.style.left = Math.random() * 100 + "%";
+        c.style.background = colors[i % colors.length];
+        c.style.animationDuration = (1.6 + Math.random() * 1.6) + "s";
+        c.style.animationDelay = (Math.random() * .6) + "s";
+        conf.appendChild(c);
+      }
+      el.querySelector("#buyBtn").addEventListener("click", function () { state.backTo = "deck"; go("product", "fwd"); });
+      el.querySelector("#moreBtn").addEventListener("click", function () { go("deck", "back"); });
+      return el;
+    },
+
+    product: function () {
+      var p = state.current;
+      var el = h(
+        '<section class="screen product">' +
+          '<div class="bar"><button class="iconbtn" type="button" id="backBtn" aria-label="Назад">' + ICON.back + '</button><span class="crumb">товар</span><button class="iconbtn likebtn' + (isLiked(p) ? ' on' : '') + '" type="button" id="likeBtn" aria-pressed="' + isLiked(p) + '" aria-label="В мэтчах">' + heartIcon(isLiked(p)) + '</button></div>' +
+          '<div class="top tint" style="background:' + p.bg + '">' + clouds +
+            fire(40, -10).replace('class="sticker"', 'class="sticker" style="top:36%;left:10%;--r:-10deg;width:40px"') +
+            heartSt(38, 16).replace('class="sticker"', 'class="sticker" style="top:42%;right:12%;--r:16deg;width:38px"') +
+            '<p class="bubble" style="position:absolute;top:calc(var(--sat) + 56px);left:50%;transform:translateX(-50%) rotate(-2deg)">' + esc(p.say) + '</p>' +
+            '<div class="cutout"><div class="art">' + p.art() + '</div></div>' +
+          '</div>' +
+          '<div class="sheet">' +
+            '<h2 class="big">' + esc(p.name) + '</h2>' +
+            '<div class="meta">' + p.meta.map(function (m) { return '<span>' + esc(m) + '</span>'; }).join("") + '</div>' +
+            '<button class="about" type="button" id="aboutBtn" aria-expanded="false" aria-controls="desc">' + ICON.info + 'о товаре</button>' +
+            '<div class="desc" id="desc"><div>' + esc(DESC[p.id] || "") + '</div></div>' +
+            '<div class="price"><s>' + rub(p.old) + '</s><b id="priceNow">' + rub(p.old) + '</b><em>−' + pct(p) + '%</em></div>' +
+            (p.sizes ? '<div class="chips" role="group" aria-label="Размер">' + p.sizes.map(function (s) { return '<button type="button" class="chip" aria-pressed="' + (s === state.size) + '">' + s + '</button>'; }).join("") + '</div>' : '') +
+            '<div class="timer" id="timer">Цена после мэтча держится 15:00</div>' +
+            '<div class="spacer"></div>' +
+            '<button class="pill pill-black wide" type="button" id="payBtn">Купить за ' + rub(p.price) + ICON.go + '</button>' +
+          '</div>' +
+        '</section>');
+      var chips = el.querySelector(".chips");
+      if (chips) chips.addEventListener("click", function (e) {
+        var b = e.target.closest(".chip"); if (!b) return;
+        state.size = b.textContent;
+        chips.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c === b); });
+      });
+      var left = 15 * 60, t = el.querySelector("#timer");
+      var iv = setInterval(function () {
+        if (!document.body.contains(t)) { clearInterval(iv); return; }
+        left = Math.max(0, left - 1);
+        t.textContent = "Цена после мэтча держится " + String(Math.floor(left / 60)).padStart(2, "0") + ":" + String(left % 60).padStart(2, "0");
+      }, 1000);
+      el.querySelector("#backBtn").addEventListener("click", function () { go(state.backTo || "deck", "back"); });
+      // сердечко: добавить или убрать из мэтчей
+      var likeBtn = el.querySelector("#likeBtn");
+      likeBtn.addEventListener("click", function () {
+        var on = !isLiked(p);
+        if (on) state.liked.push(p); else state.liked = state.liked.filter(function (x) { return x.id !== p.id; });
+        likeBtn.classList.toggle("on", on);
+        likeBtn.setAttribute("aria-pressed", on);
+        likeBtn.innerHTML = heartIcon(on);
+        if (on) { var c = centerOf(likeBtn); sparks(c.x, c.y, "#FF3D8B", 8); }
+        save();
+      });
+      // о товаре: раскрывающееся описание
+      var aboutBtn = el.querySelector("#aboutBtn"), desc = el.querySelector("#desc");
+      aboutBtn.addEventListener("click", function () {
+        var open = !desc.classList.contains("open");
+        desc.classList.toggle("open", open);
+        aboutBtn.setAttribute("aria-expanded", open);
+      });
+      // цена «тает» от старой к новой
+      var priceNow = el.querySelector("#priceNow");
+      setTimeout(function () {
+        tween(900, function (e) { priceNow.textContent = rub(Math.round(p.old + (p.price - p.old) * e)); });
+      }, reduceMotion ? 0 : 450);
+      el.querySelector("#payBtn").addEventListener("click", function (e) {
+        var b = e.currentTarget; if (b.disabled) return;
+        b.disabled = true;
+        b.innerHTML = '<span class="fill"></span><span style="position:relative">Оплачиваем…</span>';
+        b.classList.add("paying");
+        setTimeout(function () {
+          b.classList.add("done");
+          b.innerHTML = '<svg class="check" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Оплачено</span>';
+          var c = centerOf(b); sparks(c.x, c.y, "#151515", 10, "dot");
+        }, 950);
+        setTimeout(function () {
+          state.orders++;
+          state.orderList.push({ p: p, size: p.sizes ? state.size : null, num: "ПТ-" + (24800 + state.orders), at: Date.now() });
+          if (!isLiked(p)) state.liked.push(p);
+          if (state.pet) {
+            state.gift = true;
+            state.pet.fun = clamp(state.pet.fun + 25);
+          } else {
+            state.gift = false;
+            state.petNew = true;
+            adopt(p);
+          }
+          go("thanks", "fwd");
+        }, 1550);
+      });
+      return el;
+    },
+
+    thanks: function () {
+      var p = state.current;
+      var el = h(
+        '<section class="screen tint thanks" style="background:#C8F23C">' + clouds +
+          egg(34, -12).replace('class="sticker"', 'class="sticker" style="top:calc(var(--sat) + 8px);left:12%;--r:-12deg;width:34px"') +
+          fire(36, 10).replace('class="sticker"', 'class="sticker" style="bottom:calc(var(--sab) + 40px);right:12%;--r:10deg;width:36px"') +
+          '<h2 class="big">спасибо<br>за покупку</h2>' +
+          heartBird() +
+          '<div class="order">Заказ <b>ПТ-' + (24800 + state.orders) + '</b> · ' + esc(p.name) + (p.sizes ? ', ' + esc(state.size) : '') + '<br>Оплачено <b>' + rub(p.price) + '</b>, экономия <b>' + rub(p.old - p.price) + '</b><br>' +
+            (state.gift ? esc(state.pet.name) + ' радуется обновке: +25 радости' : esc(p.name) + ' вылупился из покупки! Он во вкладке «Цыпа»') + '</div>' +
+          '<button class="pill pill-black" type="button" id="meetBtn">' + (state.gift ? 'К цыпе' : 'Познакомиться с цыпой') + '</button>' +
+          '<button class="link" type="button" id="againBtn" style="position:relative;z-index:2">Вернуться к свайпам</button>' +
+        '</section>');
+      el.querySelector("#againBtn").addEventListener("click", function () { go("deck", "back"); });
+      el.querySelector("#meetBtn").addEventListener("click", function () { go("mypet", "fwd"); });
+      // сердечки и зёрна всплывают снизу
+      var kinds = [heartSt(26, 0), egg(22, 0), fire(24, 0)];
+      for (var i = 0; i < 14; i++) {
+        var f = h('<span class="floaty">' + kinds[i % 3].replace(/ class="sticker"/, '') + '</span>');
+        f.style.left = (5 + Math.random() * 85) + "%";
+        f.style.setProperty("--rot", (Math.random() * 120 - 60) + "deg");
+        f.style.animationDuration = (3.5 + Math.random() * 3) + "s";
+        f.style.animationDelay = (Math.random() * 2.5) + "s";
+        el.appendChild(f);
+      }
+      return el;
+    }
+  };
+
+  // ---------- deck & swipe ----------
+  // реплика верхней цыпы в облачке над колодой
+  function setSay(text, root) {
+    var s = (root || document).querySelector("#say"); if (!s) return;
+    if (s.textContent === text) return;
+    s.textContent = text;
+    s.classList.remove("pop"); void s.offsetWidth; s.classList.add("pop");
+  }
+  // рисованный взрыв-каракули вокруг цыпы на экране мэтча
+  function burst() {
+    var lines = "";
+    for (var i = 0; i < 12; i++) {
+      var a = i / 12 * Math.PI * 2, r1 = 118 + (i % 2) * 14, r2 = r1 + 26 + (i % 3) * 8;
+      var x1 = 160 + Math.cos(a) * r1, y1 = 160 + Math.sin(a) * r1, x2 = 160 + Math.cos(a) * r2, y2 = 160 + Math.sin(a) * r2;
+      lines += i % 3 === 1
+        ? '<circle cx="' + x2.toFixed(1) + '" cy="' + y2.toFixed(1) + '" r="6" fill="none" stroke="#151515" stroke-width="4"/>'
+        : '<path d="M' + x1.toFixed(1) + ' ' + y1.toFixed(1) + ' L' + x2.toFixed(1) + ' ' + y2.toFixed(1) + '" stroke="#151515" stroke-width="5" stroke-linecap="round"/>';
+    }
+    return '<svg viewBox="0 0 320 320">' + lines + '</svg>';
+  }
+  // заливка экрана цветом цыпы при лайке
+  function flood(fromEl, color, done) {
+    if (reduceMotion) { done(); return; }
+    var c = centerOf(fromEl), a = appEl.getBoundingClientRect();
+    var r = Math.hypot(Math.max(c.x, a.width - c.x), Math.max(c.y, a.height - c.y));
+    var f = document.createElement("div");
+    f.className = "flood";
+    f.style.background = color;
+    f.style.setProperty("--x", c.x + "px"); f.style.setProperty("--y", c.y + "px"); f.style.setProperty("--r", r + "px");
+    appEl.appendChild(f);
+    setTimeout(function () { done(); setTimeout(function () { f.classList.add("out"); setTimeout(function () { f.remove(); }, 420); }, 120); }, 430);
+  }
+  function drawDeck(deckEl, rise) {
+    deckEl.innerHTML = "";
+    if (!state.deck.length) {
+      setSay("Все цыпы на сегодня закончились. Завтра прилетят новые!", deckEl.parentNode);
+      deckEl.appendChild(h('<div class="empty"><div class="emptyart">' + bird({ comb: false, mood: "sleep" }) + '</div><b>все цыпочки просмотрены</b><span>Новые птички прилетят завтра</span><button class="pill pill-black" type="button" id="resetBtn">Показать снова</button></div>'));
+      deckEl.querySelector("#resetBtn").addEventListener("click", function () { state.deck = PRODUCTS.slice(); drawDeck(deckEl, true); save(); });
+      return;
+    }
+    var show = state.deck.slice(0, 3);
+    setSay(show[0].say, deckEl.parentNode);
+    for (var i = show.length - 1; i >= 0; i--) {
+      var p = show[i];
+      var card = h(
+        '<div class="card' + (i === 1 ? ' behind' : i === 2 ? ' behind2' : '') + (i === 0 && rise ? ' rise' : '') + '" data-id="' + p.id + '" style="background:' + p.bg + '">' +
+          '<div class="art">' + p.art() + '</div>' +
+          '<div class="info"><p class="name">' + esc(p.name) + '</p><div class="tags"><span>' + esc(p.what) + '</span><span><s>' + rub(p.old) + '</s> ' + rub(p.price) + '</span><span class="hot">−' + pct(p) + '% после мэтча</span></div></div>' +
+          '<div class="stamp like">хочу</div><div class="stamp nope">мимо</div>' +
+        '</div>');
+      deckEl.appendChild(card);
+      if (i === 0) bindDrag(card, deckEl);
+    }
+  }
+
+  // задние карточки подтягиваются, пока тянешь верхнюю (p от 0 до 1)
+  function pullBehind(deckEl, p) {
+    var b1 = deckEl.querySelector(".card.behind"), b2 = deckEl.querySelector(".card.behind2");
+    if (b1) b1.style.transform = "rotate(" + (4 - 4 * p) + "deg) translateY(" + (8 - 8 * p) + "px) scale(" + (0.96 + 0.04 * p) + ")";
+    if (b2) b2.style.transform = "rotate(" + (-5 + 1 * p) + "deg) translateY(" + (14 - 6 * p) + "px) scale(" + (0.92 + 0.04 * p) + ")";
+  }
+
+  function bindDrag(card, deckEl) {
+    var sx = 0, sy = 0, dx = 0, dy = 0, dragging = false;
+    var like = card.querySelector(".like"), nope = card.querySelector(".nope");
+    card.addEventListener("pointerdown", function (e) {
+      if (card.dataset.gone) return;
+      dragging = true; sx = e.clientX; sy = e.clientY; dx = dy = 0;
+      card.setPointerCapture(e.pointerId); card.style.transition = "none";
+      deckEl.querySelectorAll(".behind, .behind2").forEach(function (c) { c.style.transition = "none"; });
+    });
+    card.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      dx = e.clientX - sx; dy = e.clientY - sy;
+      card.style.transform = "translate(" + dx + "px," + dy + "px) rotate(" + dx / 14 + "deg)";
+      var k = Math.min(1, Math.abs(dx) / 110);
+      like.style.opacity = Math.max(0, Math.min(1, dx / 90));
+      nope.style.opacity = Math.max(0, Math.min(1, -dx / 90));
+      like.style.transform = "rotate(10deg) scale(" + (0.8 + 0.3 * Math.max(0, Math.min(1, dx / 90))) + ")";
+      nope.style.transform = "rotate(-10deg) scale(" + (0.8 + 0.3 * Math.max(0, Math.min(1, -dx / 90))) + ")";
+      pullBehind(deckEl, k);
+    });
+    function end() {
+      if (!dragging) return; dragging = false;
+      deckEl.querySelectorAll(".behind, .behind2").forEach(function (c) { c.style.transition = ""; });
+      if (Math.abs(dx) > 100) decide(card, deckEl, dx > 0 ? 1 : -1, dx, dy);
+      else {
+        card.style.transition = "transform .5s var(--spring)";
+        card.style.transform = ""; like.style.opacity = 0; nope.style.opacity = 0;
+        pullBehind(deckEl, 0);
+      }
+    }
+    card.addEventListener("pointerup", end);
+    card.addEventListener("pointercancel", end);
+  }
+
+  function flick(deckEl, dir) {
+    var top = deckEl.querySelector(".card:last-child");
+    if (!top || top.dataset.gone || !top.classList.contains("card")) return;
+    top.querySelector(dir > 0 ? ".like" : ".nope").style.opacity = 1;
+    decide(top, deckEl, dir, 0, 0);
+  }
+
+  // вправо: карточка вспыхивает и «перетекает» в экран мэтча; влево: улетает
+  function decide(card, deckEl, dir, dx, dy) {
+    card.dataset.gone = "1";
+    var p = state.deck.shift();
+    var btn = document.getElementById(dir > 0 ? "yesBtn" : "noBtn");
+    if (btn) { btn.classList.remove("burst", "shake"); void btn.offsetWidth; btn.classList.add(dir > 0 ? "burst" : "shake"); }
+    if (dir > 0) {
+      var c = centerOf(card);
+      sparks(c.x, c.y, "#151515", 14);
+      card.style.transition = "transform .35s var(--spring)";
+      card.style.transform = "translate(" + dx * 0.15 + "px," + dy * 0.15 + "px) scale(1.03)";
+      card.classList.add("liking");
+      state.current = p;
+      if (!isLiked(p)) state.liked.push(p);
+      setTimeout(function () {
+        flood(card, p.bg, function () {
+          card.querySelector(".art").style.viewTransitionName = "hero";
+          go("match", "zoom");
+        });
+      }, reduceMotion ? 0 : 260);
+    } else {
+      card.style.transition = "transform .42s cubic-bezier(.5,0,.75,0), opacity .42s";
+      card.style.transform = "translate(" + (-560) + "px," + (dy + 60) + "px) rotate(-32deg)";
+      card.style.opacity = "0.6";
+      pullBehind(deckEl, 1);
+      setTimeout(function () { drawDeck(deckEl, false); save(); }, 380);
+    }
+  }
+
+  function greeting() { var hr = new Date().getHours(); return hr < 5 ? "Доброй ночи" : hr < 12 ? "Доброе утро" : hr < 18 ? "Добрый день" : "Добрый вечер"; }
+  function saved() { return state.orderList.reduce(function (s, o) { return s + (o.p.old - o.p.price); }, 0); }
+  function ago(t) {
+    if (!t) return "";
+    var m = Math.floor((Date.now() - t) / 60000);
+    if (m < 1) return "только что вылупился";
+    if (m < 60) return "с вами " + m + " " + plural(m, "минуту", "минуты", "минут");
+    var hr = Math.floor(m / 60); if (hr < 24) return "с вами " + hr + " " + plural(hr, "час", "часа", "часов");
+    var d = Math.floor(hr / 24); return "с вами " + d + " " + plural(d, "день", "дня", "дней");
+  }
+
+  // ---------- tabs ----------
+  var CHICK_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="14" cy="8" r="4.5"/><ellipse cx="11" cy="16" rx="8" ry="6"/><path d="M18 7.5l4 1.2-4 1.3z"/></svg>';
+  function tabbar(active) {
+    var tabs = [["deck", ICON.cards, "Свайпы"], ["liked", ICON.likes, "Мэтчи"], ["mypet", CHICK_ICON, "Цыпа"], ["profile", ICON.user, "Профиль"]];
+    return '<nav class="tabbar" aria-label="Разделы">' + tabs.map(function (t) {
+      var badge = t[0] === "liked" && state.liked.length ? '<span class="badge">' + state.liked.length + '</span>'
+        : t[0] === "mypet" && state.pet && moodOf(state.pet).key !== "happy" && moodOf(state.pet).key !== "ok" && moodOf(state.pet).key !== "sleep" ? '<span class="badge">!</span>' : '';
+      return '<button class="tab" type="button" data-tab="' + t[0] + '"' + (t[0] === active ? ' aria-current="page"' : '') + '>' + (t[0] === active ? '<span class="tabpill"></span>' : '') + t[1] + t[2] + badge + '</button>';
+    }).join("") + '</nav>';
+  }
+  function bindTabs(el) {
+    el.querySelector(".tabbar").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-tab]"); if (!b) return;
+      var id = b.getAttribute("data-tab");
+      if (id === "liked") openLiked(el);
+      else if (id !== state.screen) go(id, "tab");
+    });
+  }
+
+  function isLiked(p) { return state.liked.some(function (x) { return x.id === p.id; }); }
+  function isBought(p) { return state.orderList.some(function (o) { return o.p.id === p.id; }); }
+  function heartIcon(on) {
+    return on ? ICON.likes.replace('fill="currentColor"', 'fill="#FF3D8B"')
+      : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#151515" stroke-width="2.2"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.4 3.2 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.8 0 5.9 3.9 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg>';
+  }
+  var DESC = {
+    flamingo: "Свободная футболка из плотного хлопка 220 г/м² с большим принтом фламинго на спине. Не садится после стирки.",
+    pushok: "Мягкая плюшевая цыпа ростом 25 см с красным бантиком. Можно стирать в мешке для белья.",
+    petya: "Керамическая кружка на 350 мл с петухом Петей. Можно в посудомойку и микроволновку.",
+    ryaba: "Шоппер 38×42 см из плотного хлопка с курочкой Рябой. Выдерживает до 10 кг.",
+    gosha: "Две пары носков с лапками индюка Гоши. Хлопок с эластаном, размер 36–44.",
+    nesushka: "Эмалевый брелок-яичко 6 см с карабином. На ключи, рюкзак или сумку.",
+    bro: "Футболка прямого кроя с надписью «птиц». Хлопок 100%, размеры S–XL."
+  };
+
+  // ---------- уведомления ----------
+  function notes() {
+    var list = [];
+    if (state.pet) {
+      var m = moodOf(state.pet);
+      if (m.key !== "happy" && m.key !== "ok" && m.key !== "sleep")
+        list.push({ ic: '<div class="ic" style="background:#FFD60A">' + petSVG(state.pet, m.key) + '</div>', t: state.pet.name + " " + m.text, s: "Загляните к цыпе на Apple Watch", go: "mypet" });
+    }
+    state.orderList.slice().reverse().forEach(function (o) {
+      var hrs = (Date.now() - (o.at || Date.now())) / 3600000;
+      list.push({ ic: '<div class="ic" style="background:' + o.p.bg + '">' + o.p.art() + '</div>', t: "Заказ " + o.num + (hrs < 1 ? " собирается" : hrs < 24 ? " передан в доставку" : " доставлен"), s: o.p.name + " · " + o.p.what });
+    });
+    list.push({ ic: '<div class="ic" style="background:#36C8FF">' + bird({ comb: null }) + '</div>', t: "Новые цыпочки каждый день", s: "Свайпайте, ловите мэтчи и скидки до 90%" });
+    return list;
+  }
+  function hasNews() { return notes().length - 1 > (state.seen || 0); }
+  function openNotes(screenEl) {
+    var list = notes();
+    state.seen = list.length - 1;
+    var dot = screenEl.querySelector("#bellBtn .dot"); if (dot) dot.remove();
+    var bg = sheet(screenEl, "уведомления", list.map(function (n) {
+      return '<div class="note">' + n.ic + '<div><b>' + esc(n.t) + '</b><small>' + esc(n.s) + '</small></div>' + (n.go ? '<button class="go2" type="button" data-go="' + n.go + '">Открыть</button>' : '') + '</div>';
+    }).join(""));
+    bg.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-go]"); if (b) go(b.dataset.go, "tab");
+    });
+    save();
+  }
+
+  // общая шторка снизу: закрывается крестиком, тапом по фону или свайпом вниз
+  function sheet(screenEl, title, body) {
+    var bg = h('<div class="sheet-bg"><div class="lsheet" role="dialog" aria-label="' + esc(title) + '"><div class="grab"></div><div class="head"><h3>' + esc(title) + '</h3><button class="x" type="button" aria-label="Закрыть">' + ICON.x.replace(/26/g, "16") + '</button></div>' + body + '</div></div>');
+    var sh = bg.querySelector(".lsheet");
+    function close() { if (bg.classList.contains("closing")) return; bg.classList.add("closing"); setTimeout(function () { bg.remove(); }, 250); }
+    bg.addEventListener("click", function (e) { if (e.target === bg || e.target.closest(".x")) close(); });
+    var sy = null, dy = 0;
+    sh.addEventListener("pointerdown", function (e) { if (e.target.closest("button")) return; sy = e.clientY; dy = 0; sh.style.animation = "none"; sh.style.transition = "none"; });
+    sh.addEventListener("pointermove", function (e) { if (sy === null) return; dy = Math.max(0, e.clientY - sy); sh.style.transform = "translateY(" + dy + "px)"; });
+    function up() {
+      if (sy === null) return; sy = null;
+      sh.style.transition = "transform .35s var(--spring)";
+      if (dy > 90) { sh.style.transform = "translateY(100%)"; bg.classList.add("closing"); setTimeout(function () { bg.remove(); }, 250); }
+      else sh.style.transform = "";
+    }
+    sh.addEventListener("pointerup", up); sh.addEventListener("pointercancel", up);
+    screenEl.appendChild(bg);
+    return bg;
+  }
+  function bar(label, icon, v, color) {
+    return '<div class="prow"><span class="pic">' + icon + '</span><span class="pl">' + label + '</span><i><span style="width:' + Math.round(v) + '%;background:' + color + '"></span></i><b>' + Math.round(v) + '</b></div>';
+  }
+  function plural(n, a, b, c) { var n10 = n % 10, n100 = n % 100; return n10 === 1 && n100 !== 11 ? a : n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14) ? b : c; }
+  function countUp(el, to, fmt) { tween(800, function (e) { el.textContent = fmt(Math.round(to * e)); }); }
+  function refreshPhone(first) {
+    var pet = state.pet;
+    if (state.screen === "mypet" && pet) {
+      var art = document.getElementById("ppArt"); if (!art) return;
+      var m = moodOf(pet);
+      if (art.dataset.mood !== m.key) { art.dataset.mood = m.key; art.innerHTML = petSVG(pet, m.key); }
+      document.getElementById("ppMeta").innerHTML = '<span>' + m.text + '</span><span>' + ago(pet.born) + '</span>';
+      var ps = document.getElementById("ppStats");
+      if (first || !ps.children.length) {
+        ps.innerHTML = STATS.map(function (s) { return bar(STAT[s].t, STAT[s].icon, 0, STAT[s].c); }).join("");
+        nextFrame(function () {
+          STATS.forEach(function (s, i) { var row = ps.children[i]; row.querySelector("i span").style.width = Math.round(pet[s]) + "%"; countUp(row.querySelector("b"), Math.round(pet[s]), String); });
+        });
+      } else {
+        STATS.forEach(function (s, i) { var row = ps.children[i]; row.querySelector("i span").style.width = Math.round(pet[s]) + "%"; row.querySelector("b").textContent = Math.round(pet[s]); });
+      }
+    }
+    if (state.screen === "profile") {
+      var tiles = document.getElementById("pfTiles"); if (!tiles) return;
+      tiles.innerHTML =
+        '<div><b data-n="' + state.orders + '">' + state.orders + '</b><small>' + plural(state.orders, "заказ", "заказа", "заказов") + '</small></div>' +
+        '<div><b data-n="' + state.liked.length + '">' + state.liked.length + '</b><small>' + plural(state.liked.length, "мэтч", "мэтча", "мэтчей") + '</small></div>' +
+        '<div><b data-n="' + saved() + '" data-rub="1">' + rub(saved()) + '</b><small>сэкономлено</small></div>';
+      if (first) tiles.querySelectorAll("b").forEach(function (b) { countUp(b, +b.dataset.n, b.dataset.rub ? rub : String); });
+      document.getElementById("pfOrders").innerHTML = state.orderList.length ? state.orderList.slice().reverse().map(function (o, i) {
+        return '<div class="row" style="animation-delay:' + (0.15 + i * 0.06).toFixed(2) + 's"><div class="thumb" style="background:' + o.p.bg + '">' + o.p.art() + '</div><div class="t">' + esc(o.p.name) + '<small>' + o.num + ' · ' + esc(o.p.what) + (o.size ? ', ' + o.size : '') + '</small></div><b class="osum">' + rub(o.p.price) + '</b></div>';
+      }).join("") : '<p class="none">Пока нет заказов. Смахните понравившуюся цыпу вправо.</p>';
+    }
+  }
+
+  function openLiked(screenEl) {
+    var body = state.liked.length ? state.liked.map(function (p) {
+      return '<div class="row"><div class="thumb" style="background:' + p.bg + '">' + p.art() + '</div><div class="t">' + esc(p.name) + '<small>' + esc(p.what) + ' · ' + rub(p.price) + '</small></div>' +
+        (isBought(p) ? '<button type="button" class="bought" data-open="' + p.id + '">Куплено</button>' : '<button type="button" data-id="' + p.id + '">Купить</button>') + '</div>';
+    }).join("") : '<p style="color:var(--muted);margin:0 0 6px">Пока пусто. Смахните карточку вправо, чтобы получить мэтч.</p>';
+    var bg = sheet(screenEl, "мои мэтчи", body);
+    bg.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-id], button[data-open]"); if (!b) return;
+      var id = b.dataset.id || b.dataset.open;
+      state.current = byId(id);
+      state.backTo = state.screen;
+      var thumb = b.closest(".row").querySelector(".thumb");
+      thumb.style.viewTransitionName = "hero";
+      go("product", "fwd");
+    });
+  }
+
+  var STAT = {
+    hunger: { t: "сытость", c: "#FFD60A", icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="#151515"><ellipse cx="8" cy="9" rx="3" ry="4.5" transform="rotate(-20 8 9)"/><ellipse cx="16" cy="9" rx="3" ry="4.5" transform="rotate(20 16 9)"/><ellipse cx="12" cy="17" rx="3" ry="4.5"/></svg>' },
+    clean: { t: "чистота", c: "#36C8FF", icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="#151515"><path d="M12 2s7 8 7 13a7 7 0 0 1-14 0c0-5 7-13 7-13z"/></svg>' },
+    fun: { t: "радость", c: "#FF3D8B", icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="#151515"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.4 3.2 4.5 7 4.5c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.8 0 5.9 3.9 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg>' },
+    energy: { t: "энергия", c: "#A99BFF", icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="#151515"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>' }
+  };
+  var STATS = ["hunger", "clean", "fun", "energy"];
+  var MOON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>';
+  var SUN = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4.5" fill="#fff"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>';
+  var ACT_ICON = {
+    feed: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><ellipse cx="8" cy="9" rx="3" ry="4.5" transform="rotate(-20 8 9)"/><ellipse cx="16" cy="9" rx="3" ry="4.5" transform="rotate(20 16 9)"/><ellipse cx="12" cy="17" rx="3" ry="4.5"/></svg>',
+    wash: '<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2s7 8 7 13a7 7 0 0 1-14 0c0-5 7-13 7-13z"/></svg>',
+    play: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M3.5 9.5c5 2 12 2 17 0M3.5 14.5c5-2 12-2 17 0"/></svg>'
+  };
+
+  function clamp(v) { return Math.max(0, Math.min(100, v)); }
+  function product(id) { return PRODUCTS.find(function (p) { return p.id === id; }); }
+
+  function adopt(p) {
+    state.pet = { id: p.id, name: p.name, hunger: 70, clean: 85, fun: 60, energy: 80, sleeping: false, born: Date.now(), t: Date.now() };
+  }
+  function ensurePet() { if (!state.pet) adopt(PRODUCTS[1]); }
+
+  // настроение: что сейчас нужнее всего
+  function moodOf(pet) {
+    if (pet.sleeping) return { key: "sleep", text: "спит" };
+    var low = STATS.slice().sort(function (a, b) { return pet[a] - pet[b]; })[0];
+    if (pet[low] >= 65) return { key: "happy", text: "счастлив" };
+    if (pet[low] >= 40) return { key: "ok", text: "всё хорошо" };
+    return { hunger: { key: "hungry", text: "проголодался" }, clean: { key: "dirty", text: "испачкался" }, fun: { key: "bored", text: "скучает" }, energy: { key: "tired", text: "устал, хочет спать" } }[low];
+  }
+  function petSVG(pet, moodKey) {
+    var eyes = { happy: "happy", ok: null, hungry: "sad", dirty: null, bored: "bored", tired: "bored", sleep: "sleep" }[moodKey];
+    var dirt = pet.clean < 55 ? (0.25 + 0.75 * (1 - pet.clean / 55)).toFixed(2) : 0;
+    return bird(Object.assign({}, LOOKS[pet.id] || {}, { mood: eyes, dirt: dirt }));
+  }
+
+
+  // цыпа живёт в реальном времени: за час немного голодает, пачкается, скучает и устаёт
+  var RATE = { hunger: 6, clean: 4, fun: 5, energy: 3 };
+  function tickPet() {
+    var pet = state.pet; if (!pet) return;
+    var hrs = (Date.now() - (pet.t || Date.now())) / 3600000;
+    if (hrs <= 0) return;
+    // во сне всё тратится медленнее, а энергия растёт (как в приложении для часов)
+    STATS.forEach(function (s) {
+      if (s === "energy" && pet.sleeping) pet.energy = clamp(pet.energy + 25 * hrs);
+      else pet[s] = clamp(pet[s] - RATE[s] * hrs * (pet.sleeping ? 0.35 : 1));
+    });
+    if (pet.sleeping && pet.energy >= 100) pet.sleeping = false;
+    pet.t = Date.now();
+    save();
+  }
+  // цыпу могли покормить или уложить спать на часах (другая вкладка или окно): берём её свежее состояние
+  window.addEventListener("storage", function (e) {
+    if (e.key !== STORE || !e.newValue) return;
+    try {
+      var d = JSON.parse(e.newValue);
+      if (JSON.stringify(d.pet) === JSON.stringify(state.pet)) return;
+      var had = !!state.pet;
+      state.pet = d.pet || null;
+      if (state.screen === "mypet") { if (had && state.pet) refreshPhone(); else go("mypet", "tab"); }
+      else if (state.screen === "profile") refreshPhone();
+    } catch (err) {}
+  });
+  setInterval(function () { tickPet(); if (state.screen === "mypet" || state.screen === "profile") refreshPhone(); }, 30000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { tickPet(); refreshPhone(); } });
+
+  load();
+  tickPet();
+  go("splash");
+
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+  }
+})();
+</script>
+</body>
+</html>
