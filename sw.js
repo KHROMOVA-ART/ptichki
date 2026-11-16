@@ -1,6 +1,6 @@
 // Офлайн: приложение и иконки кэшируются при установке,
 // шрифты Google кэшируются при первом показе.
-const CACHE = "ptichki-v2";
+const CACHE = "ptichki-v3";
 const APP = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
